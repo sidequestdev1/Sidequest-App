@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>SideQuest</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="SideQuest" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f8f7f4; font-family: 'DM Sans', sans-serif; }
+    .btn { cursor: pointer; border: none; outline: none; transition: all 0.18s ease; background: none; font-family: inherit; }
+    .btn:active { transform: scale(0.96); }
+    .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    @keyframes pop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+    @keyframes xpFloat { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-50px)} }
+    .fade-in { animation: fadeIn 0.3s ease both; }
+    .slide-up { animation: slideUp 0.35s ease both; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const CAT_COLORS = {
+  Social:"#3b82f6", Exploration:"#10b981", Mindfulness:"#8b5cf6",
+  Skill:"#f59e0b", Creative:"#ec4899", Adventure:"#ef4444"
+};
+
+const QUESTS = [
+  {title:"Barista Stranger",desc:"Frag den nächsten Barista wie sein Tag läuft – und hör wirklich zu.",xp:30,cat:"Social",emoji:"☕",mode:"solo"},
+  {title:"Lokalheld finden",desc:"Frag jemanden auf der Straße nach seiner Lieblingsecke in der Stadt.",xp:25,cat:"Social",emoji:"🗣️",mode:"solo"},
+  {title:"Warteschlangen-Talk",desc:"Fang in der nächsten Warteschlange ein echtes Gespräch an.",xp:35,cat:"Social",emoji:"🧍",mode:"solo"},
+  {title:"Fremder Tisch",desc:"Frag in einem vollen Café ob du dich zu jemandem setzen darfst.",xp:55,cat:"Social",emoji:"🪑",mode:"solo"},
+  {title:"Restaurantempfehlung",desc:"Frag drei verschiedene Locals nach ihrem Lieblingsrestaurant.",xp:30,cat:"Social",emoji:"🍽️",mode:"solo"},
+  {title:"Straßenkünstler würdigen",desc:"Bleib bei einem Straßenmusiker stehen, hör ein ganzes Lied und gib ihm etwas.",xp:25,cat:"Social",emoji:"🎸",mode:"solo"},
+  {title:"Generationssprung",desc:"Führ ein Gespräch mit jemandem der mindestens 30 Jahre älter ist als du.",xp:40,cat:"Social",emoji:"👴",mode:"solo"},
+  {title:"Nachbar kennenlernen",desc:"Klingel bei einem Nachbarn den du noch nie gesprochen hast und stell dich vor.",xp:50,cat:"Social",emoji:"🚪",mode:"solo"},
+  {title:"Hilf einem Fremden",desc:"Biete heute spontan jemandem deine Hilfe an – ohne gefragt zu werden.",xp:30,cat:"Social",emoji:"🤝",mode:"solo"},
+  {title:"Lob weitergeben",desc:"Lob heute einen Mitarbeiter bei seinem Chef.",xp:35,cat:"Social",emoji:"⭐",mode:"solo"},
+  {title:"Kompliment-Runde",desc:"Sagt heute jeder Person in der Gruppe drei ehrliche Komplimente.",xp:30,cat:"Social",emoji:"💬",mode:"group"},
+  {title:"Dankesbrief-Runde",desc:"Jeder schreibt einem anderen in der Gruppe einen handgeschriebenen Brief.",xp:40,cat:"Social",emoji:"💌",mode:"group"},
+  {title:"Überraschungsbesuch",desc:"Besucht jemanden dem ihr nahsteht unangekündigt – nur so.",xp:45,cat:"Social",emoji:"🎁",mode:"group"},
+  {title:"Fremde einladen",desc:"Sprecht jemanden Fremdes an und ladet ihn spontan auf einen Kaffee ein.",xp:60,cat:"Social",emoji:"🫂",mode:"group"},
+  {title:"Telefonkette",desc:"Jeder ruft heute jemanden an den er lange nicht gesprochen hat.",xp:25,cat:"Social",emoji:"📞",mode:"group"},
+
+  {title:"Endhaltestelle",desc:"Nimm irgendeine Buslinie bis zur letzten Haltestelle und schau was da ist.",xp:50,cat:"Exploration",emoji:"🚌",mode:"solo"},
+  {title:"Blind navigieren",desc:"Geh 20 Minuten ohne Karte spazieren – nur nach Gefühl. Dann finde wieder heim.",xp:40,cat:"Exploration",emoji:"🧭",mode:"solo"},
+  {title:"Alter Baum",desc:"Finde den ältesten Baum oder das älteste Gebäude in deiner Nähe.",xp:35,cat:"Exploration",emoji:"🌳",mode:"solo"},
+  {title:"Neues Museum",desc:"Besuch ein Museum in deiner Stadt das du immer ignoriert hast.",xp:40,cat:"Exploration",emoji:"🏛️",mode:"solo"},
+  {title:"Historische Tafel",desc:"Such in deiner Stadt nach einer historischen Gedenktafel und lies sie wirklich.",xp:20,cat:"Exploration",emoji:"📜",mode:"solo"},
+  {title:"Sonnenaufgang erleben",desc:"Steh morgen früh auf und schau den Sonnenaufgang von einem schönen Punkt.",xp:50,cat:"Exploration",emoji:"🌅",mode:"solo"},
+  {title:"Versteckter Park",desc:"Finde einen Park oder Garten in deiner Stadt den du noch nie betreten hast.",xp:30,cat:"Exploration",emoji:"🌿",mode:"solo"},
+  {title:"Bibliothek entdecken",desc:"Geh in eine Bibliothek, schnapp dir ein zufälliges Buch und lies 30 Minuten.",xp:25,cat:"Exploration",emoji:"📚",mode:"solo"},
+  {title:"Fluss folgen",desc:"Folge einem Fluss oder Bach für mindestens 30 Minuten zu Fuß.",xp:35,cat:"Exploration",emoji:"🏞️",mode:"solo"},
+  {title:"Nachtspaziergang",desc:"Geh alleine nachts durch deine Nachbarschaft und nimm die Stille wahr.",xp:40,cat:"Exploration",emoji:"🌙",mode:"solo"},
+  {title:"Nachbarstadt",desc:"Fahrt zusammen in die nächste kleinere Stadt und erkundet sie 2 Stunden lang.",xp:55,cat:"Exploration",emoji:"🗺️",mode:"group"},
+  {title:"Markt erkunden",desc:"Besucht zusammen einen Wochen- oder Flohmarkt und kauft was euch inspiriert.",xp:30,cat:"Exploration",emoji:"🛍️",mode:"group"},
+  {title:"Stadtführung selbst machen",desc:"Einer führt die anderen durch ein Viertel das er gut kennt – ohne Vorbereitung.",xp:45,cat:"Exploration",emoji:"🏘️",mode:"group"},
+  {title:"Nacht-Tour",desc:"Erkundet gemeinsam eure Stadt nach Mitternacht – alles wirkt anders.",xp:55,cat:"Exploration",emoji:"🌆",mode:"group"},
+  {title:"Foto-Rally",desc:"Jeder macht 5 Fotos vom gleichen Thema – dann vergleicht ihr.",xp:30,cat:"Exploration",emoji:"📸",mode:"group"},
+
+  {title:"Silent Hour",desc:"Sitz 1 Stunde in einem Café – ohne Handy. Nur beobachten.",xp:40,cat:"Mindfulness",emoji:"🧘",mode:"solo"},
+  {title:"Digital Detox",desc:"Leg dein Handy 4 Stunden lang komplett weg. Kein Schauen, kein Checken.",xp:55,cat:"Mindfulness",emoji:"📵",mode:"solo"},
+  {title:"Atemmeditation",desc:"Setz dich 15 Minuten hin und konzentriere dich nur auf deinen Atem.",xp:25,cat:"Mindfulness",emoji:"🫁",mode:"solo"},
+  {title:"Dankbarkeitsliste",desc:"Schreib 10 Dinge auf für die du gerade dankbar bist – ohne nachzudenken.",xp:20,cat:"Mindfulness",emoji:"🙏",mode:"solo"},
+  {title:"Spaziergang ohne Ziel",desc:"Geh 30 Minuten spazieren ohne Musik, Podcast oder Handy.",xp:30,cat:"Mindfulness",emoji:"🚶",mode:"solo"},
+  {title:"Nur Himmel anschauen",desc:"Leg dich irgendwo hin und schau 10 Minuten lang nur in den Himmel.",xp:20,cat:"Mindfulness",emoji:"☁️",mode:"solo"},
+  {title:"Tagebucheintrag",desc:"Schreib heute Abend alles auf was du denkst – ohne Filter, ohne Zensur.",xp:25,cat:"Mindfulness",emoji:"📓",mode:"solo"},
+  {title:"Handy-freier Abend",desc:"Verbring einen kompletten Abend ohne Bildschirm – nur du und die Welt.",xp:45,cat:"Mindfulness",emoji:"🕯️",mode:"solo"},
+  {title:"Natur-Stunde",desc:"Sitz 1 Stunde draußen in der Natur und tue absolut nichts.",xp:35,cat:"Mindfulness",emoji:"🌲",mode:"solo"},
+  {title:"Handy-Stack",desc:"Alle Handys kommen beim Essen auf einen Stapel – wer zuerst greift zahlt.",xp:30,cat:"Mindfulness",emoji:"📱",mode:"group"},
+  {title:"Schweige-Spaziergang",desc:"Macht gemeinsam einen 20-minütigen Spaziergang – ohne ein Wort zu sagen.",xp:40,cat:"Mindfulness",emoji:"🤫",mode:"group"},
+  {title:"Dankbarkeits-Runde",desc:"Jeder nennt 3 Dinge für die er heute dankbar ist – alle hören wirklich zu.",xp:25,cat:"Mindfulness",emoji:"🙏",mode:"group"},
+  {title:"Gemeinsam kochen, langsam essen",desc:"Kocht zusammen und esst danach ohne Ablenkung – nur Gespräch.",xp:35,cat:"Mindfulness",emoji:"🍳",mode:"group"},
+
+  {title:"Fremde Küche",desc:"Koch ein Gericht einer Kultur, die du noch nie gekocht hast.",xp:35,cat:"Skill",emoji:"🍜",mode:"solo"},
+  {title:"20 Wörter",desc:"Lern heute 20 Wörter einer Sprache die du gar nicht kennst.",xp:30,cat:"Skill",emoji:"🌍",mode:"solo"},
+  {title:"Origami lernen",desc:"Lern heute ein Origami-Tier falten bis es wirklich gut aussieht.",xp:25,cat:"Skill",emoji:"🦢",mode:"solo"},
+  {title:"Erste Hilfe auffrischen",desc:"Schau dir heute ein Video zur Herz-Lungen-Wiederbelebung an und präg es dir ein.",xp:30,cat:"Skill",emoji:"🏥",mode:"solo"},
+  {title:"Brot backen",desc:"Back heute ein einfaches Brot von Grund auf – kein Fertigmix.",xp:45,cat:"Skill",emoji:"🍞",mode:"solo"},
+  {title:"Sterne lernen",desc:"Lern heute 5 Sternbilder und such sie nachts am Himmel.",xp:35,cat:"Skill",emoji:"⭐",mode:"solo"},
+  {title:"Haushalt-Reparatur",desc:"Repariere heute etwas in deiner Wohnung das schon lange kaputt ist.",xp:40,cat:"Skill",emoji:"🔧",mode:"solo"},
+  {title:"Pflanzen bestimmen",desc:"Identifiziere heute 5 verschiedene Pflanzen in deiner Umgebung mit einer App.",xp:25,cat:"Skill",emoji:"🌿",mode:"solo"},
+  {title:"Cocktail mixen",desc:"Lern heute einen klassischen Cocktail perfekt zu mixen.",xp:25,cat:"Skill",emoji:"🍹",mode:"solo"},
+  {title:"Rezept improvisieren",desc:"Koch ein Gericht nur aus dem was du zuhause hast – kein Einkaufen.",xp:30,cat:"Skill",emoji:"🥘",mode:"solo"},
+  {title:"Koch-Battle",desc:"Jeder kocht ein Gericht mit denselben 5 Zutaten – dann wird bewertet.",xp:50,cat:"Skill",emoji:"👨‍🍳",mode:"group"},
+  {title:"Sprach-Challenge",desc:"Lernt gemeinsam 30 Wörter einer Sprache und testet euch gegenseitig.",xp:35,cat:"Skill",emoji:"🌍",mode:"group"},
+  {title:"Trivia Night",desc:"Macht eine eigene Quiz-Nacht – jeder bringt 10 Fragen mit.",xp:35,cat:"Skill",emoji:"🧠",mode:"group"},
+  {title:"Wein blind verkosten",desc:"Kauft 3 verschiedene Weine, verbindet die Augen und ratet welcher welcher ist.",xp:30,cat:"Skill",emoji:"🍷",mode:"group"},
+  {title:"Escape Room selbst bauen",desc:"Einer baut einen Mini-Escape-Room in der Wohnung, die anderen lösen ihn.",xp:60,cat:"Skill",emoji:"🔐",mode:"group"},
+
+  {title:"Zeitkapsel",desc:"Schreib einen Brief an dein 10-Jahre-älteres Ich und versiegele ihn.",xp:45,cat:"Creative",emoji:"✉️",mode:"solo"},
+  {title:"Schattenfotos",desc:"Mach 10 kreative Fotos – aber nur von Schatten.",xp:25,cat:"Creative",emoji:"📷",mode:"solo"},
+  {title:"Urban Poet",desc:"Schreib einen Satz der deinen heutigen Tag beschreibt und lass ihn in der Stadt liegen.",xp:35,cat:"Creative",emoji:"📝",mode:"solo"},
+  {title:"Kurzgeschichte",desc:"Schreib eine Geschichte in genau 100 Wörtern über jemanden den du heute gesehen hast.",xp:40,cat:"Creative",emoji:"✍️",mode:"solo"},
+  {title:"Selbstportrait",desc:"Mal oder zeichne heute ein Selbstportrait – so wie du dich gerade fühlst.",xp:35,cat:"Creative",emoji:"🎨",mode:"solo"},
+  {title:"Playlist für dich",desc:"Erstelle eine Playlist die deinen aktuellen Lebensabschnitt beschreibt.",xp:25,cat:"Creative",emoji:"🎵",mode:"solo"},
+  {title:"Gedicht schreiben",desc:"Schreib ein Gedicht über etwas Alltägliches das du heute beobachtet hast.",xp:35,cat:"Creative",emoji:"📜",mode:"solo"},
+  {title:"Buchcover gestalten",desc:"Gestalte das Cover für das Buch deines Lebens – mit Titel und allem.",xp:40,cat:"Creative",emoji:"📕",mode:"solo"},
+  {title:"Alter Ego",desc:"Erfinde ein Alter Ego für dich – Name, Beruf, Persönlichkeit. Schreib es auf.",xp:35,cat:"Creative",emoji:"🎭",mode:"solo"},
+  {title:"10-Jahres-Vision",desc:"Beschreib deinen idealen Tag in 10 Jahren so detailliert wie möglich.",xp:40,cat:"Creative",emoji:"🔮",mode:"solo"},
+  {title:"Stille Post Zeichnen",desc:"Einer zeichnet etwas, gibt es weiter – jeder zeichnet nach was er sieht.",xp:30,cat:"Creative",emoji:"🎨",mode:"group"},
+  {title:"Gruppen-Story",desc:"Jeder schreibt einen Satz weiter – niemand darf den vorherigen Satz ändern.",xp:35,cat:"Creative",emoji:"✍️",mode:"group"},
+  {title:"Impro-Theater",desc:"Macht 20 Minuten Improvisationstheater mit zufälligen Szenarien.",xp:45,cat:"Creative",emoji:"🎭",mode:"group"},
+  {title:"Gemeinsame Playlist",desc:"Jeder fügt 5 Songs hinzu die ihn gerade beschreiben – hört sie gemeinsam.",xp:25,cat:"Creative",emoji:"🎵",mode:"group"},
+  {title:"Mystery Dinner",desc:"Jeder kocht einen Gang ohne zu sagen was es ist – erst beim Essen wird's aufgelöst.",xp:50,cat:"Creative",emoji:"🍽️",mode:"group"},
+
+  {title:"Nacht-Revisit",desc:"Geh nachts an einen Ort den du nur tagsüber kennst.",xp:55,cat:"Adventure",emoji:"🌙",mode:"solo"},
+  {title:"Kältebad",desc:"Dusch heute morgen die letzten 2 Minuten eiskalt.",xp:35,cat:"Adventure",emoji:"🧊",mode:"solo"},
+  {title:"Früh aufstehen",desc:"Stell den Wecker auf 5 Uhr und erleb den frühen Morgen bewusst.",xp:40,cat:"Adventure",emoji:"⏰",mode:"solo"},
+  {title:"Fahrrad-Challenge",desc:"Fahr mit dem Fahrrad weiter als du es je gemacht hast.",xp:55,cat:"Adventure",emoji:"🚴",mode:"solo"},
+  {title:"Barfuß-Stunde",desc:"Geh eine Stunde lang komplett barfuß – durch verschiedene Untergründe.",xp:30,cat:"Adventure",emoji:"👣",mode:"solo"},
+  {title:"Regen genießen",desc:"Geh beim nächsten Regen ohne Schirm raus und spazier 15 Minuten.",xp:35,cat:"Adventure",emoji:"🌧️",mode:"solo"},
+  {title:"Nacht-Joggen",desc:"Geh nach 22 Uhr alleine joggen.",xp:40,cat:"Adventure",emoji:"🏃",mode:"solo"},
+  {title:"Unbekanntes Essen",desc:"Bestell in einem Restaurant etwas das du noch nie gegessen hast und nicht kennst.",xp:30,cat:"Adventure",emoji:"🍱",mode:"solo"},
+  {title:"Berggipfel besteigen",desc:"Wähl einen Hügel oder Berg in der Nähe und steig bis ganz oben.",xp:60,cat:"Adventure",emoji:"⛰️",mode:"solo"},
+  {title:"Outdoor-Nacht",desc:"Schlaf eine Nacht im Freien – Schlafsack, Sterne, kein Dach.",xp:70,cat:"Adventure",emoji:"🌌",mode:"solo"},
+  {title:"Spontantrip",desc:"Packt Taschen und fahrt heute spontan irgendwohin – ohne Plan.",xp:70,cat:"Adventure",emoji:"🎒",mode:"group"},
+  {title:"Zelt aufschlagen",desc:"Schlagt heute Nacht gemeinsam ein Zelt auf und schlaft draußen.",xp:65,cat:"Adventure",emoji:"⛺",mode:"group"},
+  {title:"Kanufahren",desc:"Leiht euch Kanus und paddelt gemeinsam für eine Stunde.",xp:55,cat:"Adventure",emoji:"🛶",mode:"group"},
+  {title:"Neuer Sport",desc:"Probiert gemeinsam eine Sportart aus die keiner von euch je gemacht hat.",xp:50,cat:"Adventure",emoji:"⚽",mode:"group"},
+  {title:"Stadtolympiade",desc:"Erfindet 5 verrückte Wettkämpfe in der Stadt – wer gewinnt bekommt einen Preis.",xp:45,cat:"Adventure",emoji:"🏅",mode:"group"},
+  {title:"Fahrrad-Tour",desc:"Macht gemeinsam eine Fahrradtour ohne vorher die Route festzulegen.",xp:50,cat:"Adventure",emoji:"🚴",mode:"group"},
+];
+
+const LEVELS = [
+  {level:1,title:"Novice Wanderer",min:0},
+  {level:2,title:"Curious Soul",min:100},
+  {level:3,title:"Urban Explorer",min:250},
+  {level:4,title:"Quest Hunter",min:450},
+  {level:5,title:"Legend",min:700},
+  {level:6,title:"Mythic Wanderer",min:1000},
+];
+
+const BADGES = [
+  {id:"first",emoji:"⚔️",title:"First Quest",desc:"Erste Quest abgeschlossen",ok:s=>s.done>=1},
+  {id:"social",emoji:"🦋",title:"Social Butterfly",desc:"3 Social Quests",ok:s=>s.social>=3},
+  {id:"explorer",emoji:"🗺️",title:"Explorer",desc:"3 Exploration Quests",ok:s=>s.explr>=3},
+  {id:"grinder",emoji:"💎",title:"Grinder",desc:"500 XP gesammelt",ok:s=>s.xp>=500},
+  {id:"streak3",emoji:"🔥",title:"On Fire",desc:"3 Tage Streak",ok:s=>s.streak>=3},
+  {id:"streak7",emoji:"⚡",title:"Week Warrior",desc:"7 Tage Streak",ok:s=>s.streak>=7},
+  {id:"legend",emoji:"👑",title:"Legend",desc:"Level 5 erreicht",ok:s=>s.level>=5},
+  {id:"streak30",emoji:"🌟",title:"Unstoppable",desc:"30 Tage Streak",ok:s=>s.streak>=30},
+  {id:"group5",emoji:"👥",title:"Team Player",desc:"5 Gruppen-Quests",ok:s=>s.grp>=5},
+];
+
+function load(k,fb){try{const v=localStorage.getItem("sq2_"+k);return v!==null?JSON.parse(v):fb;}catch{return fb;}}
+function save(k,v){try{localStorage.setItem("sq2_"+k,JSON.stringify(v));}catch{}}
+
+function getLevel(xp){return [...LEVELS].reverse().find(l=>xp>=l.min)||LEVELS[0];}
+
+function App(){
+  const [xp,setXp]=useState(()=>load("xp",0));
+  const [done,setDone]=useState(()=>load("done",0));
+  const [social,setSocial]=useState(()=>load("social",0));
+  const [explr,setExplr]=useState(()=>load("explr",0));
+  const [grp,setGrp]=useState(()=>load("grp",0));
+  const [badges,setBadges]=useState(()=>load("badges",[]));
+  const [log,setLog]=useState(()=>load("log",[]));
+  const [streak,setStreak]=useState(()=>load("streak",0));
+  const [maxStreak,setMaxStreak]=useState(()=>load("maxStreak",0));
+  const [lastDate,setLastDate]=useState(()=>load("lastDate",null));
+  const [quest,setQuest]=useState(null);
+  const [tab,setTab]=useState("home");
+  const [mode,setMode]=useState("solo");
+  const [catFilter,setCatFilter]=useState(null);
+  const [toast,setToast]=useState(null);
+  const [xpPop,setXpPop]=useState(null);
+  const [badgePop,setBadgePop]=useState(null);
+  const [streakAnim,setStreakAnim]=useState(false);
+
+  const lvl=getLevel(xp);
+  const nextLvl=LEVELS.find(l=>l.level===lvl.level+1);
+  const pct=nextLvl?Math.min(100,((xp-lvl.min)/(nextLvl.min-lvl.min))*100):100;
+
+  const stats={xp,done,social,explr,grp,streak,level:lvl.level};
+
+  useEffect(()=>{
+    save("xp",xp);save("done",done);save("social",social);
+    save("explr",explr);save("grp",grp);save("badges",badges);
+    save("log",log);save("streak",streak);save("maxStreak",maxStreak);save("lastDate",lastDate);
+  },[xp,done,social,explr,grp,badges,log,streak,maxStreak,lastDate]);
+
+  useEffect(()=>{
+    const newB=BADGES.filter(b=>!badges.includes(b.id)&&b.ok(stats));
+    if(newB.length){
+      setBadges(p=>[...p,...newB.map(b=>b.id)]);
+      setBadgePop(newB[0]);
+      setTimeout(()=>setBadgePop(null),3500);
+    }
+  },[xp,done,social,explr,grp,streak]);
+
+  function showToast(msg){setToast(msg);setTimeout(()=>setToast(null),2500);}
+
+  function pickQuest(cat){
+    let pool=QUESTS.filter(q=>q.mode===mode);
+    if(cat)pool=pool.filter(q=>q.cat===cat);
+    const avail=pool.filter(q=>!log.find(l=>l.title===q.title));
+    const final=avail.length?avail:pool;
+    if(!final.length)return;
+    setQuest(final[Math.floor(Math.random()*final.length)]);
+    setTab("quest");
+  }
+
+  function completeQuest(){
+    if(!quest)return;
+    const today=new Date().toISOString().slice(0,10);
+    let ns=streak;
+    if(!lastDate){ns=1;}
+    else{
+      const diff=Math.round((new Date(today)-new Date(lastDate))/86400000);
+      ns=diff===0?streak:diff===1?streak+1:1;
+    }
+    setLastDate(today);
+    setStreak(ns);
+    setMaxStreak(p=>Math.max(p,ns));
+    if(ns>streak){setStreakAnim(true);setTimeout(()=>setStreakAnim(false),1200);}
+    const bonus=ns>=7?Math.round(quest.xp*0.2):ns>=3?Math.round(quest.xp*0.1):0;
+    const total=quest.xp+bonus;
+    setXp(p=>p+total);
+    setDone(p=>p+1);
+    if(quest.cat==="Social")setSocial(p=>p+1);
+    if(quest.cat==="Exploration")setExplr(p=>p+1);
+    if(quest.mode==="group")setGrp(p=>p+1);
+    setLog(p=>[{...quest,xpEarned:total,date:new Date().toLocaleDateString("de-DE")},...p]);
+    setXpPop("+"+total+" XP"+(bonus>0?" 🔥":""));
+    setTimeout(()=>setXpPop(null),2000);
+    showToast("+"+total+" XP 🎉"+(ns>1?" · 🔥 "+ns+" Tage!":""));
+    setQuest(null);
+    setTab("home");
+  }
+
+  const S={
+    wrap:{minHeight:"100vh",background:"#f8f7f4",maxWidth:420,margin:"0 auto",position:"relative",paddingBottom:80},
+    toast:{position:"fixed",top:20,left:"50%",transform:"translateX(-50%)",background:"#1a1a1a",color:"#fff",padding:"12px 20px",borderRadius:50,fontSize:14,fontWeight:500,zIndex:9999,whiteSpace:"nowrap",animation:"slideUp 0.3s ease"},
+    xpPop:{position:"fixed",top:"45%",left:"50%",transform:"translate(-50%,-50%)",fontSize:32,fontWeight:700,color:"#10b981",animation:"xpFloat 1.8s ease forwards",zIndex:9999,pointerEvents:"none"},
+    badgeWrap:{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",animation:"fadeIn 0.3s ease"},
+    badgeBox:{background:"#fff",borderRadius:24,padding:"32px 40px",textAlign:"center",animation:"pop 0.5s ease",boxShadow:"0 20px 60px rgba(0,0,0,0.2)"},
+  };
+
+  // MODE TOGGLE component
+  function ModeToggle(){
+    return (
+      <div style={{display:"flex",background:"#f0ede8",borderRadius:14,padding:3,marginBottom:12}}>
+        <button className="btn" onClick={()=>setMode("solo")} style={{flex:1,padding:"10px",borderRadius:11,fontSize:13,fontWeight:600,background:mode==="solo"?"#1a1a1a":"transparent",color:mode==="solo"?"#fff":"#888",transition:"all 0.2s"}}>🧍 Solo</button>
+        <button className="btn" onClick={()=>setMode("group")} style={{flex:1,padding:"10px",borderRadius:11,fontSize:13,fontWeight:600,background:mode==="group"?"#1a1a1a":"transparent",color:mode==="group"?"#fff":"#888",transition:"all 0.2s"}}>👥 Gruppe</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={S.wrap}>
+      {toast&&<div style={S.toast}>{toast}</div>}
+      {xpPop&&<div style={S.xpPop}>{xpPop}</div>}
+      {badgePop&&(
+        <div style={S.badgeWrap}>
+          <div style={S.badgeBox}>
+            <div style={{fontSize:56,marginBottom:8}}>{badgePop.emoji}</div>
+            <div style={{fontSize:11,fontWeight:600,color:"#f59e0b",letterSpacing:2,marginBottom:6}}>BADGE FREIGESCHALTET</div>
+            <div style={{fontSize:22,fontWeight:700,marginBottom:4}}>{badgePop.title}</div>
+            <div style={{fontSize:14,color:"#666"}}>{badgePop.desc}</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── HOME ── */}
+      {tab==="home"&&(
+        <div className="fade-in">
+          {/* Header */}
+          <div style={{padding:"40px 24px 16px",background:"#fff",borderBottom:"1px solid #f0ede8"}}>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:4}}>YOUR JOURNEY</div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
+              <div>
+                <div style={{fontFamily:"'DM Serif Display',serif",fontSize:26}}>{lvl.title}</div>
+                <div style={{fontSize:13,color:"#888",marginTop:2}}>Level {lvl.level} · {xp} XP</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:28,fontWeight:700}}>{done}</div>
+                <div style={{fontSize:11,color:"#aaa"}}>Quests done</div>
+              </div>
+            </div>
+            <div style={{marginTop:14,background:"#f0ede8",borderRadius:8,height:6}}>
+              <div style={{height:"100%",borderRadius:8,background:"linear-gradient(90deg,#10b981,#3b82f6)",width:pct+"%",transition:"width 0.6s"}}/>
+            </div>
+            {nextLvl&&<div style={{display:"flex",justifyContent:"space-between",marginTop:5,fontSize:11,color:"#aaa"}}><span>{xp-lvl.min} / {nextLvl.min-lvl.min} XP</span><span>→ {nextLvl.title}</span></div>}
+          </div>
+
+          {/* Streak */}
+          <div style={{margin:"16px 20px 0",background:streak>=3?"linear-gradient(135deg,#ff6b35,#f7c59f)":streak>0?"#fff8f5":"#f8f7f4",border:streak>0?"1.5px solid #ffb088":"1.5px solid #e8e5e0",borderRadius:16,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",transform:streakAnim?"scale(1.03)":"scale(1)",transition:"all 0.4s"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <div style={{fontSize:28,filter:streak===0?"grayscale(1) opacity(0.4)":"none"}}>🔥</div>
+              <div>
+                <div style={{fontWeight:700,fontSize:18,color:streak>=3?"#fff":"#1a1a1a",lineHeight:1}}>{streak} {streak===1?"Tag":"Tage"}</div>
+                <div style={{fontSize:11,color:streak>=3?"rgba(255,255,255,0.8)":"#aaa",marginTop:2}}>{streak===0?"Starte heute deinen Streak!":streak>=7?"+20% XP aktiv 🎯":streak>=3?"+10% XP aktiv ✨":"Morgen: +10% Bonus"}</div>
+              </div>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:11,color:streak>=3?"rgba(255,255,255,0.7)":"#bbb"}}>Rekord</div>
+              <div style={{fontWeight:700,fontSize:16,color:streak>=3?"#fff":"#888"}}>{maxStreak} 🏆</div>
+            </div>
+          </div>
+          <div style={{padding:"10px 20px 0",display:"flex",gap:6}}>
+            {[0,1,2,3,4,5,6].map(i=>(
+              <div key={i} style={{flex:1,height:6,borderRadius:3,background:i<Math.min(streak,7)?(streak>=7?"#ff6b35":"#ffb088"):"#e8e5e0",transition:"background 0.3s"}}/>
+            ))}
+          </div>
+
+          {/* Quick start */}
+          <div style={{padding:"20px 24px 0"}}>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>QUICK START</div>
+            <ModeToggle/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <button className="btn card" onClick={()=>setTab("new")} style={{textAlign:"center",padding:"20px 12px",border:"2px solid #1a1a1a"}}>
+                <div style={{fontSize:28,marginBottom:6}}>{mode==="solo"?"🧍":"👥"}</div>
+                <div style={{fontWeight:600,fontSize:13}}>{mode==="solo"?"Solo":"Gruppe"}</div>
+                <div style={{fontSize:11,color:"#888",marginTop:2}}>Quest wählen</div>
+              </button>
+              <button className="btn card" onClick={()=>pickQuest(null)} style={{textAlign:"center",padding:"20px 12px",border:"1px solid #e8e5e0"}}>
+                <div style={{fontSize:28,marginBottom:6}}>🎲</div>
+                <div style={{fontWeight:600,fontSize:13}}>Sofort starten</div>
+                <div style={{fontSize:11,color:"#888",marginTop:2}}>Zufällig</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Badges */}
+          <div style={{padding:"20px 24px 0"}}>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>BADGES</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+              {BADGES.map(b=>{
+                const has=badges.includes(b.id);
+                return (
+                  <div key={b.id} className="card" style={{textAlign:"center",padding:"14px 10px",opacity:has?1:0.4,border:has?"2px solid #10b981":"1px solid #e8e5e0",transition:"all 0.3s"}}>
+                    <div style={{fontSize:24}}>{b.emoji}</div>
+                    <div style={{fontSize:10,fontWeight:600,marginTop:4,color:has?"#1a1a1a":"#aaa"}}>{b.title}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Quest log */}
+          {log.length>0&&(
+            <div style={{padding:"20px 24px 0"}}>
+              <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>QUEST LOG</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {log.slice(0,5).map((q,i)=>(
+                  <div key={i} className="card" style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
+                    <div style={{fontSize:20}}>{q.emoji}</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:600,fontSize:13}}>{q.title}</div>
+                      <div style={{fontSize:11,color:"#aaa"}}>{q.date} · {q.mode==="group"?"👥":"🧍"}</div>
+                    </div>
+                    <div style={{fontSize:12,fontWeight:700,color:"#10b981",background:"#f0fdf4",padding:"4px 8px",borderRadius:8}}>+{q.xpEarned} XP</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── NEW QUEST ── */}
+      {tab==="new"&&(
+        <div className="fade-in" style={{padding:"40px 24px 90px"}}>
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:6}}>NEW QUEST</div>
+          <div style={{fontFamily:"'DM Serif Display',serif",fontSize:26,marginBottom:20}}>Was erwartet dich?</div>
+          <ModeToggle/>
+          <button className="btn" onClick={()=>pickQuest(catFilter)} style={{width:"100%",padding:"22px",borderRadius:20,background:"#1a1a1a",color:"#fff",fontSize:16,fontWeight:700,marginBottom:20,display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
+            <span style={{fontSize:24}}>🎲</span>
+            {catFilter?catFilter+" Quest":mode==="solo"?"Solo Quest würfeln":"Gruppen Quest würfeln"}
+          </button>
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>NACH KATEGORIE</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
+            <button className="btn" onClick={()=>setCatFilter(null)} style={{padding:"8px 16px",borderRadius:50,fontSize:12,fontWeight:600,background:!catFilter?"#1a1a1a":"#f0ede8",color:!catFilter?"#fff":"#666"}}>Alle</button>
+            {Object.entries(CAT_COLORS).map(([cat,col])=>(
+              <button key={cat} className="btn" onClick={()=>setCatFilter(catFilter===cat?null:cat)} style={{padding:"8px 16px",borderRadius:50,fontSize:12,fontWeight:600,background:catFilter===cat?col:col+"15",color:catFilter===cat?"#fff":col}}>{cat}</button>
+            ))}
+          </div>
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>FORTSCHRITT</div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {Object.entries(CAT_COLORS).map(([cat,col])=>{
+              const total=QUESTS.filter(q=>q.cat===cat&&q.mode===mode).length;
+              const doneC=log.filter(q=>q.cat===cat&&q.mode===mode).length;
+              if(!total)return null;
+              return (
+                <div key={cat} style={{display:"flex",alignItems:"center",gap:12,background:"#fff",borderRadius:14,padding:"12px 16px",boxShadow:"0 2px 8px rgba(0,0,0,0.04)"}}>
+                  <div style={{width:10,height:10,borderRadius:"50%",background:col,flexShrink:0}}/>
+                  <div style={{flex:1,fontWeight:500,fontSize:14}}>{cat}</div>
+                  <div style={{fontSize:12,color:"#aaa"}}>{doneC}/{total}</div>
+                  <div style={{width:60,height:5,borderRadius:3,background:"#f0ede8",overflow:"hidden"}}>
+                    <div style={{height:"100%",borderRadius:3,background:col,width:(total?(doneC/total*100):0)+"%"}}/>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── QUEST ── */}
+      {tab==="quest"&&quest&&(
+        <div className="fade-in" style={{padding:"40px 24px 40px",minHeight:"100vh"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:24}}>
+            <button className="btn" onClick={()=>{setQuest(null);setTab("home");}} style={{fontSize:20,color:"#888"}}>←</button>
+            <span style={{fontSize:13,color:"#888"}}>Zurück</span>
+          </div>
+          <div className="slide-up">
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:CAT_COLORS[quest.cat]+"18",color:CAT_COLORS[quest.cat],padding:"6px 12px",borderRadius:50,fontSize:11,fontWeight:600,marginBottom:20,letterSpacing:1}}>
+              <span style={{width:6,height:6,borderRadius:"50%",background:"currentColor"}}/>
+              {quest.cat.toUpperCase()} · {quest.mode==="solo"?"SOLO":"GRUPPE"}
+            </div>
+            <div style={{background:"#fff",borderRadius:24,padding:32,boxShadow:"0 4px 24px rgba(0,0,0,0.08)",marginBottom:20}}>
+              <div style={{fontSize:56,marginBottom:16}}>{quest.emoji}</div>
+              <div style={{fontFamily:"'DM Serif Display',serif",fontSize:28,lineHeight:1.2,marginBottom:16}}>{quest.title}</div>
+              <div style={{fontSize:16,color:"#555",lineHeight:1.6}}>{quest.desc}</div>
+            </div>
+            <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:16,padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
+              <div>
+                <div style={{fontSize:13,color:"#666"}}>Belohnung</div>
+                <div style={{fontSize:22,fontWeight:700,color:"#10b981"}}>+{quest.xp} XP{streak>=3?" (+"+(streak>=7?"20":"10")+"% Streak)":""}</div>
+              </div>
+              <div style={{fontSize:28}}>🏆</div>
+            </div>
+            <button className="btn" onClick={completeQuest} style={{width:"100%",padding:16,borderRadius:14,background:"#1a1a1a",color:"#fff",fontSize:15,fontWeight:600,marginBottom:10}}>Quest abgeschlossen ✓</button>
+            <button className="btn" onClick={()=>pickQuest(null)} style={{width:"100%",padding:14,borderRadius:14,background:"transparent",color:"#888",border:"1px solid #e8e5e0",fontSize:14}}>Andere Quest →</button>
+          </div>
+        </div>
+      )}
+
+      {/* ── PROFILE ── */}
+      {tab==="profile"&&(
+        <div className="fade-in" style={{padding:"40px 24px 90px"}}>
+          <div style={{textAlign:"center",marginBottom:24}}>
+            <div style={{width:72,height:72,borderRadius:"50%",background:"linear-gradient(135deg,#1a1a1a,#444)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,margin:"0 auto 12px"}}>🧭</div>
+            <div style={{fontFamily:"'DM Serif Display',serif",fontSize:22}}>{lvl.title}</div>
+            <div style={{fontSize:13,color:"#888",marginTop:2}}>Level {lvl.level} · {xp} XP</div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+            {[{l:"Quests",v:done,e:"⚔️"},{l:"XP total",v:xp,e:"⚡"},{l:"Badges",v:badges.length,e:"🏅"},{l:"Max Streak",v:maxStreak+"d",e:"🏆"}].map(s=>(
+              <div key={s.l} className="card" style={{textAlign:"center",padding:"16px 8px"}}>
+                <div style={{fontSize:20}}>{s.e}</div>
+                <div style={{fontSize:22,fontWeight:700,marginTop:4}}>{s.v}</div>
+                <div style={{fontSize:10,color:"#aaa",marginTop:2}}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+          {/* Streak card */}
+          <div className="card" style={{marginBottom:20,background:streak>=3?"linear-gradient(135deg,#ff6b35,#f7c59f)":undefined,border:streak>=3?"none":"1px solid #e8e5e0"}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:streak>=3?"rgba(255,255,255,0.7)":"#999",marginBottom:4}}>STREAK</div>
+                <div style={{fontFamily:"'DM Serif Display',serif",fontSize:36,color:streak>=3?"#fff":"#1a1a1a"}}>{streak} <span style={{fontSize:14,fontWeight:400}}>Tage</span></div>
+                <div style={{fontSize:12,color:streak>=3?"rgba(255,255,255,0.8)":"#aaa",marginTop:4}}>{streak>=7?"⚡ +20% XP":streak>=3?"🔥 +10% XP":streak>0?"Morgen: +10% ab 3 Tagen":"Schließ heute eine Quest ab!"}</div>
+              </div>
+              <div style={{fontSize:44}}>🔥</div>
+            </div>
+            <div style={{display:"flex",gap:5,marginTop:14}}>
+              {[0,1,2,3,4,5,6].map(i=>(
+                <div key={i} style={{flex:1,height:7,borderRadius:4,background:i<Math.min(streak,7)?(streak>=3?"rgba(255,255,255,0.7)":"#ff6b35"):(streak>=3?"rgba(255,255,255,0.2)":"#e8e5e0"),transition:"background 0.3s"}}/>
+              ))}
+            </div>
+          </div>
+          {/* Level progress */}
+          <div className="card" style={{marginBottom:20}}>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
+              <div style={{fontWeight:600,fontSize:14}}>Level Fortschritt</div>
+              <div style={{fontSize:13,color:"#888"}}>Lv.{lvl.level} → {nextLvl?"Lv."+nextLvl.level:"MAX"}</div>
+            </div>
+            <div style={{background:"#f0ede8",borderRadius:8,height:8,marginBottom:8}}>
+              <div style={{height:"100%",borderRadius:8,background:"linear-gradient(90deg,#10b981,#3b82f6)",width:pct+"%",transition:"width 0.6s"}}/>
+            </div>
+            {nextLvl?<div style={{fontSize:12,color:"#aaa"}}>Noch {nextLvl.min-xp} XP bis <strong>{nextLvl.title}</strong></div>:<div style={{fontSize:12,color:"#10b981",fontWeight:600}}>MAX LEVEL 👑</div>}
+          </div>
+          {/* All badges */}
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>ALLE BADGES</div>
+          <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
+            {BADGES.map(b=>{
+              const has=badges.includes(b.id);
+              return (
+                <div key={b.id} className="card" style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",opacity:has?1:0.5,border:has?"1.5px solid #10b981":"1px solid #e8e5e0",transition:"all 0.3s"}}>
+                  <div style={{fontSize:26}}>{b.emoji}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontWeight:600,fontSize:14}}>{b.title}</div>
+                    <div style={{fontSize:12,color:"#888"}}>{b.desc}</div>
+                  </div>
+                  {has&&<div style={{fontSize:16}}>✓</div>}
+                </div>
+              );
+            })}
+          </div>
+          {/* All levels */}
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>ALLE LEVEL</div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {LEVELS.map(l=>{
+              const reached=xp>=l.min;
+              const cur=lvl.level===l.level;
+              return (
+                <div key={l.level} className="card" style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",opacity:reached?1:0.4,border:cur?"2px solid #1a1a1a":"1px solid #e8e5e0"}}>
+                  <div style={{width:32,height:32,borderRadius:"50%",background:reached?"#1a1a1a":"#e8e5e0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:reached?"#fff":"#aaa"}}>{l.level}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontWeight:600,fontSize:13}}>{l.title}</div>
+                    <div style={{fontSize:11,color:"#aaa"}}>ab {l.min} XP</div>
+                  </div>
+                  {cur&&<div style={{fontSize:11,fontWeight:600,color:"#1a1a1a",background:"#f0ede8",padding:"3px 8px",borderRadius:50}}>JETZT</div>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── TAB BAR ── */}
+      {tab!=="quest"&&(
+        <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:420,background:"rgba(255,255,255,0.95)",backdropFilter:"blur(12px)",borderTop:"1px solid #e8e5e0",display:"flex",alignItems:"center",padding:"8px 0 16px",zIndex:100}}>
+          <button className="btn" onClick={()=>setTab("home")} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 0"}}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill={tab==="home"?"#1a1a1a":"none"} stroke={tab==="home"?"#1a1a1a":"#aaa"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span style={{fontSize:10,fontWeight:600,color:tab==="home"?"#1a1a1a":"#aaa"}}>Home</span>
+          </button>
+          <div style={{flex:1,display:"flex",justifyContent:"center"}}>
+            <button className="btn" onClick={()=>setTab("new")} style={{width:56,height:56,borderRadius:"50%",background:"#1a1a1a",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(0,0,0,0.25)",marginTop:-18}}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          <button className="btn" onClick={()=>setTab("profile")} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 0"}}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill={tab==="profile"?"#1a1a1a":"none"} stroke={tab==="profile"?"#1a1a1a":"#aaa"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span style={{fontSize:10,fontWeight:600,color:tab==="profile"?"#1a1a1a":"#aaa"}}>Profil</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
