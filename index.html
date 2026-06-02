@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #f8f7f4; font-family: 'DM Sans', sans-serif; }
+    body { background: #f8f7f4; /* overridden by JS */ font-family: 'DM Sans', sans-serif; }
     .btn { cursor: pointer; border: none; outline: none; transition: all 0.18s ease; background: none; font-family: inherit; }
     .btn:active { transform: scale(0.96); }
     .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
@@ -153,6 +153,89 @@ const BADGES = [
   {id:"group5",emoji:"👥",title:"Team Player",desc:"5 Gruppen-Quests",ok:s=>s.grp>=5},
 ];
 
+
+const QUOTES = [
+  {text:"Das Einzige was dich aufhalten kann, bist du selbst.",author:"Unbekannt",cat:"Motivation"},
+  {text:"Jeder Tag ist eine neue Chance, ein besseres Leben zu beginnen.",author:"Unbekannt",cat:"Positivity"},
+  {text:"Du bist stärker als du glaubst.",author:"A.A. Milne",cat:"Stärke"},
+  {text:"Fang an. Der Rest kommt von alleine.",author:"Unbekannt",cat:"Motivation"},
+  {text:"Kleine Fortschritte sind immer noch Fortschritte.",author:"Unbekannt",cat:"Wachstum"},
+  {text:"Das Leben beginnt am Ende deiner Komfortzone.",author:"Neale Donald Walsch",cat:"Mut"},
+  {text:"Sei die Veränderung, die du in der Welt sehen willst.",author:"Mahatma Gandhi",cat:"Inspiration"},
+  {text:"Erfolg ist die Summe kleiner Anstrengungen, die jeden Tag wiederholt werden.",author:"Robert Collier",cat:"Motivation"},
+  {text:"Du musst nicht perfekt sein, um erstaunlich zu sein.",author:"Unbekannt",cat:"Positivity"},
+  {text:"Jeder Experte war einmal ein Anfänger.",author:"Helen Hayes",cat:"Wachstum"},
+  {text:"Die Zukunft gehört denen, die an die Schönheit ihrer Träume glauben.",author:"Eleanor Roosevelt",cat:"Träume"},
+  {text:"Nicht das Problem zählt, sondern wie du damit umgehst.",author:"Unbekannt",cat:"Stärke"},
+  {text:"Dein heutiges Lächeln kann jemandes ganzen Tag verändern.",author:"Unbekannt",cat:"Positivity"},
+  {text:"Glaub an dich selbst und alles ist möglich.",author:"Unbekannt",cat:"Mut"},
+  {text:"Wer aufhört besser werden zu wollen, hört auf gut zu sein.",author:"Philip Rosenthal",cat:"Wachstum"},
+  {text:"Das Geheimnis des Vorwärtskommens ist das Anfangen.",author:"Mark Twain",cat:"Motivation"},
+  {text:"Du hast überlebt, was dich zu brechen versucht hat.",author:"Unbekannt",cat:"Stärke"},
+  {text:"Lebe das Leben, das du dir vorstellst.",author:"Henry David Thoreau",cat:"Inspiration"},
+  {text:"Freude ist nicht in Dingen, sie ist in uns.",author:"Richard Wagner",cat:"Positivity"},
+  {text:"Ein Lächeln ist die kürzeste Distanz zwischen zwei Menschen.",author:"Victor Borge",cat:"Positivity"},
+  {text:"Mut ist nicht die Abwesenheit von Angst, sondern das Urteil, dass etwas anderes wichtiger ist.",author:"Ambrose Redmoon",cat:"Mut"},
+  {text:"Werde wer du bist.",author:"Friedrich Nietzsche",cat:"Inspiration"},
+  {text:"Das Beste kommt für die, die warten können.",author:"Unbekannt",cat:"Geduld"},
+  {text:"Jede Meisterleistung war einmal unmöglich.",author:"Unbekannt",cat:"Motivation"},
+  {text:"Du bist genug – genau so wie du bist.",author:"Unbekannt",cat:"Positivity"},
+  {text:"Träume groß. Fang klein an. Handle jetzt.",author:"Unbekannt",cat:"Motivation"},
+  {text:"Das Leben ist zu kurz um unglücklich zu sein.",author:"Unbekannt",cat:"Positivity"},
+  {text:"Vertraue dem Prozess.",author:"Unbekannt",cat:"Geduld"},
+  {text:"Wo Wille ist, ist auch ein Weg.",author:"Sprichwort",cat:"Motivation"},
+  {text:"Wachstum beginnt dort, wo deine Ausreden enden.",author:"Unbekannt",cat:"Wachstum"},
+];
+
+const AFFIRMATIONS = [
+  "Ich bin stark genug für jede Herausforderung.",
+  "Ich verdiene Glück und Erfolg.",
+  "Ich wachse jeden Tag ein bisschen mehr.",
+  "Ich bin dankbar für alles was ich habe.",
+  "Ich vertraue meinem Weg.",
+  "Ich bin genug – genau so wie ich bin.",
+  "Ich ziehe positive Energie in mein Leben.",
+  "Ich habe die Kraft, Dinge zu verändern.",
+  "Ich bin stolz auf meine Fortschritte.",
+  "Ich wähle heute Freude.",
+  "Ich lasse los was mir nicht mehr dient.",
+  "Ich bin offen für neue Möglichkeiten.",
+  "Mein bestes Kapitel ist noch nicht geschrieben.",
+  "Ich glaube an meine Fähigkeiten.",
+  "Ich bin der Hauptcharakter meines Lebens.",
+  "Heute mache ich einen Schritt nach vorne.",
+  "Ich behandle mich selbst mit Freundlichkeit.",
+  "Alles was ich brauche ist bereits in mir.",
+  "Ich bin auf dem richtigen Weg.",
+  "Ich schaffe Raum für Wachstum.",
+];
+
+const POS_CHALLENGES = [
+  {title:"Dankbarkeits-Moment",desc:"Schreib gerade jetzt 3 Dinge auf für die du dankbar bist.",xp:15,emoji:"🙏"},
+  {title:"Fremdes Lächeln",desc:"Lächle heute 5 fremden Menschen bewusst an.",xp:20,emoji:"😊"},
+  {title:"Selbst-Kompliment",desc:"Sag dir laut vor dem Spiegel drei echte Komplimente.",xp:15,emoji:"🪞"},
+  {title:"Positiver Gedanke",desc:"Ersetze heute jeden negativen Gedanken sofort durch einen positiven.",xp:25,emoji:"💭"},
+  {title:"Gutes Wort",desc:"Sag heute jemandem etwas Nettes das du wirklich meinst.",xp:20,emoji:"💬"},
+  {title:"5-Minuten-Stille",desc:"Sitz 5 Minuten still und konzentriere dich nur auf deinen Atem.",xp:15,emoji:"🧘"},
+  {title:"Natur-Moment",desc:"Geh raus und nimm bewusst 3 schöne Dinge in der Natur wahr.",xp:20,emoji:"🌿"},
+  {title:"Alte Fotos anschauen",desc:"Schau dir Fotos von schönen Momenten an und lächle dabei.",xp:10,emoji:"📸"},
+  {title:"Freude-Liste",desc:"Schreib 10 Dinge auf die dich wirklich glücklich machen.",xp:15,emoji:"✨"},
+  {title:"Selbstfürsorge",desc:"Tu heute etwas nur für dich – etwas das dir richtig gut tut.",xp:25,emoji:"💆"},
+  {title:"Musik-Boost",desc:"Hör ein Lied das dich immer glücklich macht – und tanz dazu.",xp:15,emoji:"🎵"},
+  {title:"Positives Mantra",desc:"Wähle ein Mantra für heute und sag es dir den ganzen Tag.",xp:10,emoji:"🌟"},
+  {title:"Gutes tun",desc:"Tu heute etwas Gutes für jemand anderen ohne etwas zu erwarten.",xp:30,emoji:"❤️"},
+  {title:"Digital Pause",desc:"Leg dein Handy 1 Stunde weg und genieß die Gegenwart.",xp:20,emoji:"📵"},
+  {title:"Lachen erzwingen",desc:"Lach 60 Sekunden lang – auch wenn es sich komisch anfühlt.",xp:10,emoji:"😂"},
+];
+
+const MOODS = [
+  {emoji:"😄",label:"Großartig",color:"#10b981"},
+  {emoji:"😊",label:"Gut",color:"#3b82f6"},
+  {emoji:"😐",label:"Okay",color:"#f59e0b"},
+  {emoji:"😔",label:"Nicht so gut",color:"#f97316"},
+  {emoji:"😢",label:"Schlecht",color:"#ef4444"},
+];
+
 function load(k,fb){try{const v=localStorage.getItem("sq2_"+k);return v!==null?JSON.parse(v):fb;}catch{return fb;}}
 function save(k,v){try{localStorage.setItem("sq2_"+k,JSON.stringify(v));}catch{}}
 
@@ -177,6 +260,16 @@ function App(){
   const [xpPop,setXpPop]=useState(null);
   const [badgePop,setBadgePop]=useState(null);
   const [streakAnim,setStreakAnim]=useState(false);
+  const [dark,setDark]=useState(()=>load("dark",false));
+  const [posTab,setPosTab]=useState("quotes");
+  const [todayQuote]=useState(()=>QUOTES[new Date().getDate()%QUOTES.length]);
+  const [todayAffirm]=useState(()=>AFFIRMATIONS[new Date().getDate()%AFFIRMATIONS.length]);
+  const [posChallenge,setPosChallenge]=useState(null);
+  const [doneChallenges,setDoneChallenges]=useState(()=>load("doneChallenges",[]));
+  const [moodLog,setMoodLog]=useState(()=>load("moodLog",[]));
+  const [savedMoodToday,setSavedMoodToday]=useState(false);
+  const [likedQuotes,setLikedQuotes]=useState(()=>load("likedQuotes",[]));
+  const [shownQuoteIdx,setShownQuoteIdx]=useState(()=>Math.floor(Math.random()*QUOTES.length));
 
   const lvl=getLevel(xp);
   const nextLvl=LEVELS.find(l=>l.level===lvl.level+1);
@@ -188,7 +281,8 @@ function App(){
     save("xp",xp);save("done",done);save("social",social);
     save("explr",explr);save("grp",grp);save("badges",badges);
     save("log",log);save("streak",streak);save("maxStreak",maxStreak);save("lastDate",lastDate);
-  },[xp,done,social,explr,grp,badges,log,streak,maxStreak,lastDate]);
+    save("doneChallenges",doneChallenges);save("moodLog",moodLog);save("likedQuotes",likedQuotes);save("dark",dark);
+  },[xp,done,social,explr,grp,badges,log,streak,maxStreak,lastDate,doneChallenges,moodLog,likedQuotes,dark]);
 
   useEffect(()=>{
     const newB=BADGES.filter(b=>!badges.includes(b.id)&&b.ok(stats));
@@ -209,6 +303,33 @@ function App(){
     if(!final.length)return;
     setQuest(final[Math.floor(Math.random()*final.length)]);
     setTab("quest");
+  }
+
+  function pickPosChallenge(){
+    const avail=POS_CHALLENGES.filter(c=>!doneChallenges.includes(c.title));
+    const pool=avail.length?avail:POS_CHALLENGES;
+    setPosChallenge(pool[Math.floor(Math.random()*pool.length)]);
+  }
+
+  function completePosChallenge(){
+    if(!posChallenge)return;
+    setXp(p=>p+posChallenge.xp);
+    setDoneChallenges(p=>[...p,posChallenge.title]);
+    setXpPop("+"+posChallenge.xp+" XP ✨");
+    setTimeout(()=>setXpPop(null),2000);
+    showToast("+"+posChallenge.xp+" XP 🌟");
+    setPosChallenge(null);
+  }
+
+  function logMood(mood){
+    const today=new Date().toLocaleDateString("de-DE");
+    setMoodLog(p=>[{...mood,date:today},...p.slice(0,29)]);
+    setSavedMoodToday(true);
+    showToast("Mood gespeichert "+mood.emoji);
+  }
+
+  function toggleLike(idx){
+    setLikedQuotes(p=>p.includes(idx)?p.filter(i=>i!==idx):[...p,idx]);
   }
 
   function completeQuest(){
@@ -239,8 +360,30 @@ function App(){
     setTab("home");
   }
 
+  const D={
+    bg: dark?"#0f0f0f":"#f8f7f4",
+    card: dark?"#1e1e1e":"#fff",
+    cardBorder: dark?"#2a2a2a":"rgba(0,0,0,0.06)",
+    text: dark?"#f0f0f0":"#1a1a1a",
+    textSub: dark?"#999":"#888",
+    textMuted: dark?"#555":"#aaa",
+    border: dark?"#2a2a2a":"#e8e5e0",
+    headerBg: dark?"#151515":"#fff",
+    headerBorder: dark?"#222":"#f0ede8",
+    inputBg: dark?"#2a2a2a":"#f8f7f4",
+    pillBg: dark?"#2a2a2a":"#f0ede8",
+    pillText: dark?"#ccc":"#666",
+    streakBg: dark?"#1a0a00":"#fff8f5",
+    streakBorder: dark?"#3d1f00":"#ffb088",
+    tabBg: dark?"rgba(15,15,15,0.97)":"rgba(255,255,255,0.97)",
+    posHeader: dark?"#1a1400":"#fef3c7",
+    posHeaderBorder: dark?"#2a2000":"#fcd34d",
+    posHeaderText: dark?"#fbbf24":"#92400e",
+    posHeaderSub: dark?"#a07020":"#78350f",
+  };
+
   const S={
-    wrap:{minHeight:"100vh",background:"#f8f7f4",maxWidth:420,margin:"0 auto",position:"relative",paddingBottom:80},
+    wrap:{minHeight:"100vh",background:D.bg,maxWidth:420,margin:"0 auto",position:"relative",paddingBottom:80},
     toast:{position:"fixed",top:20,left:"50%",transform:"translateX(-50%)",background:"#1a1a1a",color:"#fff",padding:"12px 20px",borderRadius:50,fontSize:14,fontWeight:500,zIndex:9999,whiteSpace:"nowrap",animation:"slideUp 0.3s ease"},
     xpPop:{position:"fixed",top:"45%",left:"50%",transform:"translate(-50%,-50%)",fontSize:32,fontWeight:700,color:"#10b981",animation:"xpFloat 1.8s ease forwards",zIndex:9999,pointerEvents:"none"},
     badgeWrap:{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",animation:"fadeIn 0.3s ease"},
@@ -250,7 +393,7 @@ function App(){
   // MODE TOGGLE component
   function ModeToggle(){
     return (
-      <div style={{display:"flex",background:"#f0ede8",borderRadius:14,padding:3,marginBottom:12}}>
+      <div style={{display:"flex",background:D.pillBg,borderRadius:14,padding:3,marginBottom:12}}>
         <button className="btn" onClick={()=>setMode("solo")} style={{flex:1,padding:"10px",borderRadius:11,fontSize:13,fontWeight:600,background:mode==="solo"?"#1a1a1a":"transparent",color:mode==="solo"?"#fff":"#888",transition:"all 0.2s"}}>🧍 Solo</button>
         <button className="btn" onClick={()=>setMode("group")} style={{flex:1,padding:"10px",borderRadius:11,fontSize:13,fontWeight:600,background:mode==="group"?"#1a1a1a":"transparent",color:mode==="group"?"#fff":"#888",transition:"all 0.2s"}}>👥 Gruppe</button>
       </div>
@@ -267,7 +410,7 @@ function App(){
             <div style={{fontSize:56,marginBottom:8}}>{badgePop.emoji}</div>
             <div style={{fontSize:11,fontWeight:600,color:"#f59e0b",letterSpacing:2,marginBottom:6}}>BADGE FREIGESCHALTET</div>
             <div style={{fontSize:22,fontWeight:700,marginBottom:4}}>{badgePop.title}</div>
-            <div style={{fontSize:14,color:"#666"}}>{badgePop.desc}</div>
+            <div style={{fontSize:14,color:D.pillText}}>{badgePop.desc}</div>
           </div>
         </div>
       )}
@@ -276,26 +419,26 @@ function App(){
       {tab==="home"&&(
         <div className="fade-in">
           {/* Header */}
-          <div style={{padding:"40px 24px 16px",background:"#fff",borderBottom:"1px solid #f0ede8"}}>
-            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:4}}>YOUR JOURNEY</div>
+          <div style={{padding:"40px 24px 16px",background:D.headerBg,borderBottom:"1px solid "+D.headerBorder}}>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:4}}>YOUR JOURNEY</div>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
               <div>
                 <div style={{fontFamily:"'DM Serif Display',serif",fontSize:26}}>{lvl.title}</div>
-                <div style={{fontSize:13,color:"#888",marginTop:2}}>Level {lvl.level} · {xp} XP</div>
+                <div style={{fontSize:13,color:D.textSub,marginTop:2}}>Level {lvl.level} · {xp} XP</div>
               </div>
               <div style={{textAlign:"right"}}>
                 <div style={{fontSize:28,fontWeight:700}}>{done}</div>
-                <div style={{fontSize:11,color:"#aaa"}}>Quests done</div>
+                <div style={{fontSize:11,color:D.textMuted}}>Quests done</div>
               </div>
             </div>
-            <div style={{marginTop:14,background:"#f0ede8",borderRadius:8,height:6}}>
+            <div style={{marginTop:14,background:D.pillBg,borderRadius:8,height:6}}>
               <div style={{height:"100%",borderRadius:8,background:"linear-gradient(90deg,#10b981,#3b82f6)",width:pct+"%",transition:"width 0.6s"}}/>
             </div>
-            {nextLvl&&<div style={{display:"flex",justifyContent:"space-between",marginTop:5,fontSize:11,color:"#aaa"}}><span>{xp-lvl.min} / {nextLvl.min-lvl.min} XP</span><span>→ {nextLvl.title}</span></div>}
+            {nextLvl&&<div style={{display:"flex",justifyContent:"space-between",marginTop:5,fontSize:11,color:D.textMuted}}><span>{xp-lvl.min} / {nextLvl.min-lvl.min} XP</span><span>→ {nextLvl.title}</span></div>}
           </div>
 
           {/* Streak */}
-          <div style={{margin:"16px 20px 0",background:streak>=3?"linear-gradient(135deg,#ff6b35,#f7c59f)":streak>0?"#fff8f5":"#f8f7f4",border:streak>0?"1.5px solid #ffb088":"1.5px solid #e8e5e0",borderRadius:16,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",transform:streakAnim?"scale(1.03)":"scale(1)",transition:"all 0.4s"}}>
+          <div style={{margin:"16px 20px 0",background:streak>=3?"linear-gradient(135deg,#ff6b35,#f7c59f)":streak>0?"#fff8f5":"#f8f7f4",border:streak>0?"1.5px solid #ffb088":"1.5px solid "+D.border,borderRadius:16,padding:"14px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",transform:streakAnim?"scale(1.03)":"scale(1)",transition:"all 0.4s"}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
               <div style={{fontSize:28,filter:streak===0?"grayscale(1) opacity(0.4)":"none"}}>🔥</div>
               <div>
@@ -316,30 +459,30 @@ function App(){
 
           {/* Quick start */}
           <div style={{padding:"20px 24px 0"}}>
-            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>QUICK START</div>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>QUICK START</div>
             <ModeToggle/>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
               <button className="btn card" onClick={()=>setTab("new")} style={{textAlign:"center",padding:"20px 12px",border:"2px solid #1a1a1a"}}>
                 <div style={{fontSize:28,marginBottom:6}}>{mode==="solo"?"🧍":"👥"}</div>
                 <div style={{fontWeight:600,fontSize:13}}>{mode==="solo"?"Solo":"Gruppe"}</div>
-                <div style={{fontSize:11,color:"#888",marginTop:2}}>Quest wählen</div>
+                <div style={{fontSize:11,color:D.textSub,marginTop:2}}>Quest wählen</div>
               </button>
-              <button className="btn card" onClick={()=>pickQuest(null)} style={{textAlign:"center",padding:"20px 12px",border:"1px solid #e8e5e0"}}>
+              <button className="btn card" onClick={()=>pickQuest(null)} style={{textAlign:"center",padding:"20px 12px",border:"1px solid "+D.border}}>
                 <div style={{fontSize:28,marginBottom:6}}>🎲</div>
                 <div style={{fontWeight:600,fontSize:13}}>Sofort starten</div>
-                <div style={{fontSize:11,color:"#888",marginTop:2}}>Zufällig</div>
+                <div style={{fontSize:11,color:D.textSub,marginTop:2}}>Zufällig</div>
               </button>
             </div>
           </div>
 
           {/* Badges */}
           <div style={{padding:"20px 24px 0"}}>
-            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>BADGES</div>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>BADGES</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
               {BADGES.map(b=>{
                 const has=badges.includes(b.id);
                 return (
-                  <div key={b.id} className="card" style={{textAlign:"center",padding:"14px 10px",opacity:has?1:0.4,border:has?"2px solid #10b981":"1px solid #e8e5e0",transition:"all 0.3s"}}>
+                  <div key={b.id} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",textAlign:"center",padding:"14px 10px",opacity:has?1:0.4,border:has?"2px solid #10b981":"1px solid #e8e5e0",transition:"all 0.3s"}}>
                     <div style={{fontSize:24}}>{b.emoji}</div>
                     <div style={{fontSize:10,fontWeight:600,marginTop:4,color:has?"#1a1a1a":"#aaa"}}>{b.title}</div>
                   </div>
@@ -351,14 +494,14 @@ function App(){
           {/* Quest log */}
           {log.length>0&&(
             <div style={{padding:"20px 24px 0"}}>
-              <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>QUEST LOG</div>
+              <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>QUEST LOG</div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {log.slice(0,5).map((q,i)=>(
-                  <div key={i} className="card" style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
+                  <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
                     <div style={{fontSize:20}}>{q.emoji}</div>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:600,fontSize:13}}>{q.title}</div>
-                      <div style={{fontSize:11,color:"#aaa"}}>{q.date} · {q.mode==="group"?"👥":"🧍"}</div>
+                      <div style={{fontSize:11,color:D.textMuted}}>{q.date} · {q.mode==="group"?"👥":"🧍"}</div>
                     </div>
                     <div style={{fontSize:12,fontWeight:700,color:"#10b981",background:"#f0fdf4",padding:"4px 8px",borderRadius:8}}>+{q.xpEarned} XP</div>
                   </div>
@@ -371,22 +514,22 @@ function App(){
 
       {/* ── NEW QUEST ── */}
       {tab==="new"&&(
-        <div className="fade-in" style={{padding:"40px 24px 90px"}}>
-          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:6}}>NEW QUEST</div>
+        <div className="fade-in" style={{padding:"40px 24px 90px",background:D.bg}}>
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:6}}>NEW QUEST</div>
           <div style={{fontFamily:"'DM Serif Display',serif",fontSize:26,marginBottom:20}}>Was erwartet dich?</div>
           <ModeToggle/>
           <button className="btn" onClick={()=>pickQuest(catFilter)} style={{width:"100%",padding:"22px",borderRadius:20,background:"#1a1a1a",color:"#fff",fontSize:16,fontWeight:700,marginBottom:20,display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
             <span style={{fontSize:24}}>🎲</span>
             {catFilter?catFilter+" Quest":mode==="solo"?"Solo Quest würfeln":"Gruppen Quest würfeln"}
           </button>
-          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>NACH KATEGORIE</div>
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>NACH KATEGORIE</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
             <button className="btn" onClick={()=>setCatFilter(null)} style={{padding:"8px 16px",borderRadius:50,fontSize:12,fontWeight:600,background:!catFilter?"#1a1a1a":"#f0ede8",color:!catFilter?"#fff":"#666"}}>Alle</button>
             {Object.entries(CAT_COLORS).map(([cat,col])=>(
               <button key={cat} className="btn" onClick={()=>setCatFilter(catFilter===cat?null:cat)} style={{padding:"8px 16px",borderRadius:50,fontSize:12,fontWeight:600,background:catFilter===cat?col:col+"15",color:catFilter===cat?"#fff":col}}>{cat}</button>
             ))}
           </div>
-          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>FORTSCHRITT</div>
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>FORTSCHRITT</div>
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
             {Object.entries(CAT_COLORS).map(([cat,col])=>{
               const total=QUESTS.filter(q=>q.cat===cat&&q.mode===mode).length;
@@ -396,8 +539,8 @@ function App(){
                 <div key={cat} style={{display:"flex",alignItems:"center",gap:12,background:"#fff",borderRadius:14,padding:"12px 16px",boxShadow:"0 2px 8px rgba(0,0,0,0.04)"}}>
                   <div style={{width:10,height:10,borderRadius:"50%",background:col,flexShrink:0}}/>
                   <div style={{flex:1,fontWeight:500,fontSize:14}}>{cat}</div>
-                  <div style={{fontSize:12,color:"#aaa"}}>{doneC}/{total}</div>
-                  <div style={{width:60,height:5,borderRadius:3,background:"#f0ede8",overflow:"hidden"}}>
+                  <div style={{fontSize:12,color:D.textMuted}}>{doneC}/{total}</div>
+                  <div style={{width:60,height:5,borderRadius:3,background:D.pillBg,overflow:"hidden"}}>
                     <div style={{height:"100%",borderRadius:3,background:col,width:(total?(doneC/total*100):0)+"%"}}/>
                   </div>
                 </div>
@@ -411,8 +554,8 @@ function App(){
       {tab==="quest"&&quest&&(
         <div className="fade-in" style={{padding:"40px 24px 40px",minHeight:"100vh"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:24}}>
-            <button className="btn" onClick={()=>{setQuest(null);setTab("home");}} style={{fontSize:20,color:"#888"}}>←</button>
-            <span style={{fontSize:13,color:"#888"}}>Zurück</span>
+            <button className="btn" onClick={()=>{setQuest(null);setTab("home");}} style={{fontSize:20,color:D.textSub}}>←</button>
+            <span style={{fontSize:13,color:D.textSub}}>Zurück</span>
           </div>
           <div className="slide-up">
             <div style={{display:"inline-flex",alignItems:"center",gap:6,background:CAT_COLORS[quest.cat]+"18",color:CAT_COLORS[quest.cat],padding:"6px 12px",borderRadius:50,fontSize:11,fontWeight:600,marginBottom:20,letterSpacing:1}}>
@@ -422,40 +565,40 @@ function App(){
             <div style={{background:"#fff",borderRadius:24,padding:32,boxShadow:"0 4px 24px rgba(0,0,0,0.08)",marginBottom:20}}>
               <div style={{fontSize:56,marginBottom:16}}>{quest.emoji}</div>
               <div style={{fontFamily:"'DM Serif Display',serif",fontSize:28,lineHeight:1.2,marginBottom:16}}>{quest.title}</div>
-              <div style={{fontSize:16,color:"#555",lineHeight:1.6}}>{quest.desc}</div>
+              <div style={{fontSize:16,color:D.textSub,lineHeight:1.6}}>{quest.desc}</div>
             </div>
             <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:16,padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
               <div>
-                <div style={{fontSize:13,color:"#666"}}>Belohnung</div>
+                <div style={{fontSize:13,color:D.pillText}}>Belohnung</div>
                 <div style={{fontSize:22,fontWeight:700,color:"#10b981"}}>+{quest.xp} XP{streak>=3?" (+"+(streak>=7?"20":"10")+"% Streak)":""}</div>
               </div>
               <div style={{fontSize:28}}>🏆</div>
             </div>
             <button className="btn" onClick={completeQuest} style={{width:"100%",padding:16,borderRadius:14,background:"#1a1a1a",color:"#fff",fontSize:15,fontWeight:600,marginBottom:10}}>Quest abgeschlossen ✓</button>
-            <button className="btn" onClick={()=>pickQuest(null)} style={{width:"100%",padding:14,borderRadius:14,background:"transparent",color:"#888",border:"1px solid #e8e5e0",fontSize:14}}>Andere Quest →</button>
+            <button className="btn" onClick={()=>pickQuest(null)} style={{width:"100%",padding:14,borderRadius:14,background:"transparent",color:D.textSub,border:"1px solid "+D.border,fontSize:14}}>Andere Quest →</button>
           </div>
         </div>
       )}
 
       {/* ── PROFILE ── */}
       {tab==="profile"&&(
-        <div className="fade-in" style={{padding:"40px 24px 90px"}}>
+        <div className="fade-in" style={{padding:"40px 24px 90px",background:D.bg}}>
           <div style={{textAlign:"center",marginBottom:24}}>
             <div style={{width:72,height:72,borderRadius:"50%",background:"linear-gradient(135deg,#1a1a1a,#444)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,margin:"0 auto 12px"}}>🧭</div>
             <div style={{fontFamily:"'DM Serif Display',serif",fontSize:22}}>{lvl.title}</div>
-            <div style={{fontSize:13,color:"#888",marginTop:2}}>Level {lvl.level} · {xp} XP</div>
+            <div style={{fontSize:13,color:D.textSub,marginTop:2}}>Level {lvl.level} · {xp} XP</div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
             {[{l:"Quests",v:done,e:"⚔️"},{l:"XP total",v:xp,e:"⚡"},{l:"Badges",v:badges.length,e:"🏅"},{l:"Max Streak",v:maxStreak+"d",e:"🏆"}].map(s=>(
-              <div key={s.l} className="card" style={{textAlign:"center",padding:"16px 8px"}}>
+              <div key={s.l} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",textAlign:"center",padding:"16px 8px"}}>
                 <div style={{fontSize:20}}>{s.e}</div>
                 <div style={{fontSize:22,fontWeight:700,marginTop:4}}>{s.v}</div>
-                <div style={{fontSize:10,color:"#aaa",marginTop:2}}>{s.l}</div>
+                <div style={{fontSize:10,color:D.textMuted,marginTop:2}}>{s.l}</div>
               </div>
             ))}
           </div>
           {/* Streak card */}
-          <div className="card" style={{marginBottom:20,background:streak>=3?"linear-gradient(135deg,#ff6b35,#f7c59f)":undefined,border:streak>=3?"none":"1px solid #e8e5e0"}}>
+          <div className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",marginBottom:20,background:streak>=3?"linear-gradient(135deg,#ff6b35,#f7c59f)":undefined,border:streak>=3?"none":"1px solid #e8e5e0"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
               <div>
                 <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:streak>=3?"rgba(255,255,255,0.7)":"#999",marginBottom:4}}>STREAK</div>
@@ -471,27 +614,43 @@ function App(){
             </div>
           </div>
           {/* Level progress */}
-          <div className="card" style={{marginBottom:20}}>
+          <div className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",marginBottom:20}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
               <div style={{fontWeight:600,fontSize:14}}>Level Fortschritt</div>
-              <div style={{fontSize:13,color:"#888"}}>Lv.{lvl.level} → {nextLvl?"Lv."+nextLvl.level:"MAX"}</div>
+              <div style={{fontSize:13,color:D.textSub}}>Lv.{lvl.level} → {nextLvl?"Lv."+nextLvl.level:"MAX"}</div>
             </div>
-            <div style={{background:"#f0ede8",borderRadius:8,height:8,marginBottom:8}}>
+            <div style={{background:D.pillBg,borderRadius:8,height:8,marginBottom:8}}>
               <div style={{height:"100%",borderRadius:8,background:"linear-gradient(90deg,#10b981,#3b82f6)",width:pct+"%",transition:"width 0.6s"}}/>
             </div>
-            {nextLvl?<div style={{fontSize:12,color:"#aaa"}}>Noch {nextLvl.min-xp} XP bis <strong>{nextLvl.title}</strong></div>:<div style={{fontSize:12,color:"#10b981",fontWeight:600}}>MAX LEVEL 👑</div>}
+            {nextLvl?<div style={{fontSize:12,color:D.textMuted}}>Noch {nextLvl.min-xp} XP bis <strong>{nextLvl.title}</strong></div>:<div style={{fontSize:12,color:"#10b981",fontWeight:600}}>MAX LEVEL 👑</div>}
           </div>
           {/* All badges */}
-          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>ALLE BADGES</div>
+          {/* Dark Mode Toggle */}
+          <div className="card" style={{marginBottom:20,padding:"18px 20px"}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <div style={{fontSize:26}}>{dark?"🌙":"☀️"}</div>
+                <div>
+                  <div style={{fontWeight:600,fontSize:15,color:D.text}}>{dark?"Dark Mode":"Light Mode"}</div>
+                  <div style={{fontSize:12,color:D.textMuted,marginTop:2}}>{dark?"Dunkel & entspannt":"Hell & frisch"}</div>
+                </div>
+              </div>
+              <button className="btn" onClick={()=>setDark(p=>!p)} style={{width:52,height:30,borderRadius:15,background:dark?"#3b82f6":"#e2e8f0",position:"relative",transition:"background 0.3s",flexShrink:0,padding:0}}>
+                <div style={{position:"absolute",top:3,left:dark?24:3,width:24,height:24,borderRadius:"50%",background:"#fff",transition:"left 0.3s",boxShadow:"0 2px 6px rgba(0,0,0,0.25)"}}/>
+              </button>
+            </div>
+          </div>
+
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>ALLE BADGES</div>
           <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
             {BADGES.map(b=>{
               const has=badges.includes(b.id);
               return (
-                <div key={b.id} className="card" style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",opacity:has?1:0.5,border:has?"1.5px solid #10b981":"1px solid #e8e5e0",transition:"all 0.3s"}}>
+                <div key={b.id} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:14,padding:"14px 16px",opacity:has?1:0.5,border:has?"1.5px solid #10b981":"1px solid #e8e5e0",transition:"all 0.3s"}}>
                   <div style={{fontSize:26}}>{b.emoji}</div>
                   <div style={{flex:1}}>
                     <div style={{fontWeight:600,fontSize:14}}>{b.title}</div>
-                    <div style={{fontSize:12,color:"#888"}}>{b.desc}</div>
+                    <div style={{fontSize:12,color:D.textSub}}>{b.desc}</div>
                   </div>
                   {has&&<div style={{fontSize:16}}>✓</div>}
                 </div>
@@ -499,19 +658,19 @@ function App(){
             })}
           </div>
           {/* All levels */}
-          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#999",marginBottom:12}}>ALLE LEVEL</div>
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>ALLE LEVEL</div>
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
             {LEVELS.map(l=>{
               const reached=xp>=l.min;
               const cur=lvl.level===l.level;
               return (
-                <div key={l.level} className="card" style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",opacity:reached?1:0.4,border:cur?"2px solid #1a1a1a":"1px solid #e8e5e0"}}>
+                <div key={l.level} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:12,padding:"12px 16px",opacity:reached?1:0.4,border:cur?"2px solid #1a1a1a":"1px solid #e8e5e0"}}>
                   <div style={{width:32,height:32,borderRadius:"50%",background:reached?"#1a1a1a":"#e8e5e0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:reached?"#fff":"#aaa"}}>{l.level}</div>
                   <div style={{flex:1}}>
                     <div style={{fontWeight:600,fontSize:13}}>{l.title}</div>
-                    <div style={{fontSize:11,color:"#aaa"}}>ab {l.min} XP</div>
+                    <div style={{fontSize:11,color:D.textMuted}}>ab {l.min} XP</div>
                   </div>
-                  {cur&&<div style={{fontSize:11,fontWeight:600,color:"#1a1a1a",background:"#f0ede8",padding:"3px 8px",borderRadius:50}}>JETZT</div>}
+                  {cur&&<div style={{fontSize:11,fontWeight:600,color:D.text,background:D.pillBg,padding:"3px 8px",borderRadius:50}}>JETZT</div>}
                 </div>
               );
             })}
@@ -519,9 +678,181 @@ function App(){
         </div>
       )}
 
+
+      {/* ── POSITIVITY HUB ── */}
+      {tab==="positivity"&&(
+        <div className="fade-in" style={{paddingBottom:90,background:D.bg}}>
+          {/* Header */}
+          <div style={{padding:"40px 24px 20px",background:D.posHeader,borderBottom:"1px solid "+D.posHeaderBorder}}>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.posHeaderText,marginBottom:4}}>POSITIVITY HUB</div>
+            <div style={{fontFamily:"'DM Serif Display',serif",fontSize:28,color:D.text}}>Dein täglicher Boost ✨</div>
+            <div style={{fontSize:13,color:D.posHeaderSub,marginTop:4}}>Quotes · Affirmationen · Challenges · Mood</div>
+          </div>
+
+          {/* Sub-tabs */}
+          <div style={{padding:"12px 16px",background:"#fff",borderBottom:"1px solid "+D.headerBorder,display:"flex",gap:8,overflowX:"auto"}}>
+            {[["quotes","💬","Quotes"],["affirm","🌸","Affirmationen"],["challenges","⚡","Challenges"],["mood","😊","Mood"]].map(([id,em,label])=>(
+              <button key={id} className="btn" onClick={()=>setPosTab(id)} style={{padding:"8px 14px",borderRadius:50,fontSize:12,fontWeight:600,whiteSpace:"nowrap",background:posTab===id?"#1a1a1a":"#f0ede8",color:posTab===id?"#fff":"#666",flexShrink:0}}>{em} {label}</button>
+            ))}
+          </div>
+
+          {/* QUOTES */}
+          {posTab==="quotes"&&(
+            <div style={{padding:"20px 24px 0"}}>
+              {/* Featured quote */}
+              <div style={{background:"linear-gradient(135deg,#1a1a1a,#333)",borderRadius:24,padding:28,marginBottom:16,position:"relative"}}>
+                <div style={{fontSize:32,marginBottom:12}}>💬</div>
+                <div style={{fontFamily:"'DM Serif Display',serif",fontSize:20,color:"#fff",lineHeight:1.4,marginBottom:12}}>"{QUOTES[shownQuoteIdx].text}"</div>
+                <div style={{fontSize:13,color:"rgba(255,255,255,0.6)"}}>— {QUOTES[shownQuoteIdx].author}</div>
+                <div style={{marginTop:12,display:"flex",gap:8,alignItems:"center"}}>
+                  <span style={{fontSize:11,fontWeight:600,color:"rgba(255,255,255,0.5)",background:"rgba(255,255,255,0.1)",padding:"4px 10px",borderRadius:50}}>{QUOTES[shownQuoteIdx].cat}</span>
+                  <button className="btn" onClick={()=>toggleLike(shownQuoteIdx)} style={{marginLeft:"auto",fontSize:22}}>{likedQuotes.includes(shownQuoteIdx)?"❤️":"🤍"}</button>
+                </div>
+              </div>
+              <button className="btn" onClick={()=>setShownQuoteIdx(Math.floor(Math.random()*QUOTES.length))} style={{width:"100%",padding:"14px",borderRadius:14,background:D.pillBg,color:D.text,fontSize:14,fontWeight:600,marginBottom:24}}>Neues Quote 🔀</button>
+
+              {/* Liked quotes */}
+              {likedQuotes.length>0&&(
+                <div>
+                  <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>FAVORITEN ❤️</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                    {likedQuotes.map(idx=>(
+                      <div key={idx} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",padding:"16px 18px",borderLeft:"3px solid #f59e0b"}}>
+                        <div style={{fontSize:14,color:D.text,lineHeight:1.5,marginBottom:6}}>"{QUOTES[idx].text}"</div>
+                        <div style={{fontSize:12,color:D.textMuted}}>— {QUOTES[idx].author}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* All quotes grid */}
+              <div style={{marginTop:24}}>
+                <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>ALLE QUOTES</div>
+                <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                  {QUOTES.map((q,i)=>(
+                    <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start"}}>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:13,color:D.text,lineHeight:1.5}}>"{q.text}"</div>
+                        <div style={{fontSize:11,color:D.textMuted,marginTop:4}}>— {q.author} · <span style={{color:"#f59e0b"}}>{q.cat}</span></div>
+                      </div>
+                      <button className="btn" onClick={()=>toggleLike(i)} style={{fontSize:18,flexShrink:0}}>{likedQuotes.includes(i)?"❤️":"🤍"}</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* AFFIRMATIONS */}
+          {posTab==="affirm"&&(
+            <div style={{padding:"20px 24px 0"}}>
+              {/* Daily affirmation */}
+              <div style={{background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"1px solid #bbf7d0",borderRadius:24,padding:28,marginBottom:20,textAlign:"center"}}>
+                <div style={{fontSize:36,marginBottom:12}}>🌸</div>
+                <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#166534",marginBottom:10}}>DEINE TAGESAFFIRMATION</div>
+                <div style={{fontFamily:"'DM Serif Display',serif",fontSize:22,color:D.text,lineHeight:1.4}}>{todayAffirm}</div>
+              </div>
+              <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>ALLE AFFIRMATIONEN</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {AFFIRMATIONS.map((a,i)=>(
+                  <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",padding:"16px 18px",display:"flex",alignItems:"center",gap:12}}>
+                    <div style={{width:32,height:32,borderRadius:"50%",background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>🌱</div>
+                    <div style={{fontSize:14,color:D.text,lineHeight:1.4}}>{a}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* CHALLENGES */}
+          {posTab==="challenges"&&(
+            <div style={{padding:"20px 24px 0"}}>
+              {posChallenge?(
+                <div className="slide-up">
+                  <div style={{background:"linear-gradient(135deg,#fef3c7,#fde68a)",borderRadius:24,padding:28,marginBottom:16}}>
+                    <div style={{fontSize:52,marginBottom:12}}>{posChallenge.emoji}</div>
+                    <div style={{fontFamily:"'DM Serif Display',serif",fontSize:24,marginBottom:10}}>{posChallenge.title}</div>
+                    <div style={{fontSize:16,color:D.textSub,lineHeight:1.6}}>{posChallenge.desc}</div>
+                    <div style={{marginTop:16,display:"inline-flex",alignItems:"center",gap:6,background:"rgba(0,0,0,0.08)",padding:"6px 12px",borderRadius:50}}>
+                      <span style={{fontSize:12,fontWeight:700,color:D.posHeaderText}}>+{posChallenge.xp} XP</span>
+                    </div>
+                  </div>
+                  <button className="btn" onClick={completePosChallenge} style={{width:"100%",padding:16,borderRadius:14,background:"#1a1a1a",color:"#fff",fontSize:15,fontWeight:600,marginBottom:10}}>Challenge abgeschlossen ✓</button>
+                  <button className="btn" onClick={pickPosChallenge} style={{width:"100%",padding:14,borderRadius:14,background:"transparent",color:D.textSub,border:"1px solid "+D.border,fontSize:14}}>Andere Challenge →</button>
+                </div>
+              ):(
+                <div>
+                  <button className="btn" onClick={pickPosChallenge} style={{width:"100%",padding:"22px",borderRadius:20,background:"linear-gradient(135deg,#f59e0b,#fbbf24)",color:"#fff",fontSize:16,fontWeight:700,marginBottom:20,display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
+                    <span style={{fontSize:24}}>✨</span>
+                    Challenge würfeln
+                  </button>
+                  <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>ALLE CHALLENGES <span style={{color:"#10b981"}}>({doneChallenges.length}/{POS_CHALLENGES.length} gemacht)</span></div>
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {POS_CHALLENGES.map((c,i)=>{
+                      const isDone=doneChallenges.includes(c.title);
+                      return (
+                        <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:12,padding:"14px 16px",opacity:isDone?0.5:1}}>
+                          <div style={{fontSize:24}}>{c.emoji}</div>
+                          <div style={{flex:1}}>
+                            <div style={{fontWeight:600,fontSize:13}}>{c.title}</div>
+                            <div style={{fontSize:11,color:D.textMuted,marginTop:2}}>{c.desc.slice(0,50)}...</div>
+                          </div>
+                          <div style={{fontSize:11,fontWeight:700,color:"#f59e0b",background:"#fef3c7",padding:"4px 8px",borderRadius:8}}>{isDone?"✓":"+"+c.xp+" XP"}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* MOOD TRACKER */}
+          {posTab==="mood"&&(
+            <div style={{padding:"20px 24px 0"}}>
+              <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>WIE FÜHLST DU DICH HEUTE?</div>
+              {savedMoodToday?(
+                <div className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",textAlign:"center",padding:24,marginBottom:20,background:"#f0fdf4",border:"1px solid #bbf7d0"}}>
+                  <div style={{fontSize:36,marginBottom:8}}>{moodLog[0]?.emoji}</div>
+                  <div style={{fontWeight:600,fontSize:16}}>{moodLog[0]?.label}</div>
+                  <div style={{fontSize:12,color:D.textMuted,marginTop:4}}>Heute gespeichert ✓</div>
+                </div>
+              ):(
+                <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8,marginBottom:20}}>
+                  {MOODS.map(m=>(
+                    <button key={m.label} className="btn card" onClick={()=>logMood(m)} style={{padding:"14px 4px",textAlign:"center",border:"1px solid "+D.border}}>
+                      <div style={{fontSize:28}}>{m.emoji}</div>
+                      <div style={{fontSize:9,fontWeight:600,marginTop:4,color:D.textSub}}>{m.label}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {moodLog.length>0&&(
+                <div>
+                  <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>MOOD VERLAUF</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {moodLog.slice(0,10).map((m,i)=>(
+                      <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:12,padding:"12px 16px"}}>
+                        <div style={{fontSize:24}}>{m.emoji}</div>
+                        <div style={{flex:1}}>
+                          <div style={{fontWeight:600,fontSize:13}}>{m.label}</div>
+                          <div style={{fontSize:11,color:D.textMuted}}>{m.date}</div>
+                        </div>
+                        <div style={{width:10,height:10,borderRadius:"50%",background:m.color}}/>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── TAB BAR ── */}
       {tab!=="quest"&&(
-        <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:420,background:"rgba(255,255,255,0.95)",backdropFilter:"blur(12px)",borderTop:"1px solid #e8e5e0",display:"flex",alignItems:"center",padding:"8px 0 16px",zIndex:100}}>
+        <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:420,background:D.tabBg,backdropFilter:"blur(12px)",borderTop:"1px solid "+D.border,display:"flex",alignItems:"center",padding:"8px 0 16px",zIndex:100}}>
           <button className="btn" onClick={()=>setTab("home")} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 0"}}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill={tab==="home"?"#1a1a1a":"none"} stroke={tab==="home"?"#1a1a1a":"#aaa"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <span style={{fontSize:10,fontWeight:600,color:tab==="home"?"#1a1a1a":"#aaa"}}>Home</span>
@@ -531,6 +862,10 @@ function App(){
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
           </div>
+          <button className="btn" onClick={()=>setTab("positivity")} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 0"}}>
+            <span style={{fontSize:22,lineHeight:1}}>{tab==="positivity"?"🌟":"⭐"}</span>
+            <span style={{fontSize:10,fontWeight:600,color:tab==="positivity"?"#f59e0b":"#aaa"}}>Positivity</span>
+          </button>
           <button className="btn" onClick={()=>setTab("profile")} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 0"}}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill={tab==="profile"?"#1a1a1a":"none"} stroke={tab==="profile"?"#1a1a1a":"#aaa"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span style={{fontSize:10,fontWeight:600,color:tab==="profile"?"#1a1a1a":"#aaa"}}>Profil</span>
