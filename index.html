@@ -13,7 +13,7 @@
     body { background: #f8f7f4; /* overridden by JS */ font-family: 'DM Sans', sans-serif; }
     .btn { cursor: pointer; border: none; outline: none; transition: all 0.18s ease; background: none; font-family: inherit; }
     .btn:active { transform: scale(0.96); }
-    .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .card { background: transparent; border-radius: 20px; padding: 20px; }
     @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
     @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
     @keyframes pop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
@@ -361,25 +361,40 @@ function App(){
   }
 
   const D={
-    bg: dark?"#0f0f0f":"#f8f7f4",
-    card: dark?"#1e1e1e":"#fff",
-    cardBorder: dark?"#2a2a2a":"rgba(0,0,0,0.06)",
-    text: dark?"#f0f0f0":"#1a1a1a",
-    textSub: dark?"#999":"#888",
-    textMuted: dark?"#555":"#aaa",
-    border: dark?"#2a2a2a":"#e8e5e0",
-    headerBg: dark?"#151515":"#fff",
-    headerBorder: dark?"#222":"#f0ede8",
-    inputBg: dark?"#2a2a2a":"#f8f7f4",
-    pillBg: dark?"#2a2a2a":"#f0ede8",
-    pillText: dark?"#ccc":"#666",
-    streakBg: dark?"#1a0a00":"#fff8f5",
-    streakBorder: dark?"#3d1f00":"#ffb088",
-    tabBg: dark?"rgba(15,15,15,0.97)":"rgba(255,255,255,0.97)",
-    posHeader: dark?"#1a1400":"#fef3c7",
-    posHeaderBorder: dark?"#2a2000":"#fcd34d",
-    posHeaderText: dark?"#fbbf24":"#92400e",
+    bg:          dark?"#0d0d0d":"#f8f7f4",
+    card:        dark?"#1a1a1a":"#fff",
+    cardShadow:  dark?"0 2px 12px rgba(0,0,0,0.6)":"0 2px 12px rgba(0,0,0,0.06)",
+    text:        dark?"#f0f0f0":"#1a1a1a",
+    textSub:     dark?"#aaa":"#888",
+    textMuted:   dark?"#666":"#aaa",
+    border:      dark?"#2c2c2c":"#e8e5e0",
+    headerBg:    dark?"#111":"#fff",
+    headerBorder:dark?"#222":"#f0ede8",
+    inputBg:     dark?"#222":"#f8f7f4",
+    pillBg:      dark?"#222":"#f0ede8",
+    pillText:    dark?"#ccc":"#666",
+    streakBg:    dark?"#1a0d00":"#fff8f5",
+    streakBorder:dark?"#3d1f00":"#ffb088",
+    tabBg:       dark?"rgba(13,13,13,0.98)":"rgba(255,255,255,0.97)",
+    posHeader:   dark?"#151200":"#fef3c7",
+    posHeaderBorder:dark?"#2a2200":"#fcd34d",
+    posHeaderText:dark?"#fbbf24":"#92400e",
     posHeaderSub: dark?"#a07020":"#78350f",
+    questCard:   dark?"#1a1a1a":"#fff",
+    xpGreen:     "#f0fdf4",
+    xpGreenBg:   dark?"#052e16":"#f0fdf4",
+    xpGreenBorder:dark?"#166534":"#bbf7d0",
+    levelCard:   dark?"#1a1a1a":"#fff",
+    subTabBg:    dark?"#111":"#fff",
+    subTabBorder:dark?"#222":"#f0ede8",
+    affirm:      dark?"#052e16":"#f0fdf4",
+    affirmBorder:dark?"#166534":"#bbf7d0",
+    affirmText:  dark?"#4ade80":"#166534",
+    badgeUnlock: dark?"#10b981":"#10b981",
+    progressBg:  dark?"#222":"#f0ede8",
+    moodSave:    dark?"#052e16":"#f0fdf4",
+    moodSaveBorder:dark?"#166534":"#bbf7d0",
+    logDate:     dark?"#555":"#aaa",
   };
 
   const S={
@@ -394,8 +409,8 @@ function App(){
   function ModeToggle(){
     return (
       <div style={{display:"flex",background:D.pillBg,borderRadius:14,padding:3,marginBottom:12}}>
-        <button className="btn" onClick={()=>setMode("solo")} style={{flex:1,padding:"10px",borderRadius:11,fontSize:13,fontWeight:600,background:mode==="solo"?"#1a1a1a":"transparent",color:mode==="solo"?"#fff":"#888",transition:"all 0.2s"}}>🧍 Solo</button>
-        <button className="btn" onClick={()=>setMode("group")} style={{flex:1,padding:"10px",borderRadius:11,fontSize:13,fontWeight:600,background:mode==="group"?"#1a1a1a":"transparent",color:mode==="group"?"#fff":"#888",transition:"all 0.2s"}}>👥 Gruppe</button>
+        <button className="btn" onClick={()=>setMode("solo")} style={{flex:1,padding:"10px",borderRadius:11,fontSize:13,fontWeight:600,background:mode==="solo"?D.text:"transparent",color:mode==="solo"?D.bg:D.textSub,transition:"all 0.2s"}}>🧍 Solo</button>
+        <button className="btn" onClick={()=>setMode("group")} style={{flex:1,padding:"10px",borderRadius:11,fontSize:13,fontWeight:600,background:mode==="group"?D.text:"transparent",color:mode==="group"?D.bg:D.textSub,transition:"all 0.2s"}}>👥 Gruppe</button>
       </div>
     );
   }
@@ -482,7 +497,7 @@ function App(){
               {BADGES.map(b=>{
                 const has=badges.includes(b.id);
                 return (
-                  <div key={b.id} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",textAlign:"center",padding:"14px 10px",opacity:has?1:0.4,border:has?"2px solid #10b981":"1px solid #e8e5e0",transition:"all 0.3s"}}>
+                  <div key={b.id} className="card" style={{background:D.card,boxShadow:D.cardShadow,textAlign:"center",padding:"14px 10px",opacity:has?1:0.4,border:has?"2px solid #10b981":"1px solid "+D.border,transition:"all 0.3s"}}>
                     <div style={{fontSize:24}}>{b.emoji}</div>
                     <div style={{fontSize:10,fontWeight:600,marginTop:4,color:has?"#1a1a1a":"#aaa"}}>{b.title}</div>
                   </div>
@@ -497,13 +512,13 @@ function App(){
               <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>QUEST LOG</div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {log.slice(0,5).map((q,i)=>(
-                  <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
+                  <div key={i} className="card" style={{background:D.card,boxShadow:D.cardShadow,display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
                     <div style={{fontSize:20}}>{q.emoji}</div>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:600,fontSize:13}}>{q.title}</div>
                       <div style={{fontSize:11,color:D.textMuted}}>{q.date} · {q.mode==="group"?"👥":"🧍"}</div>
                     </div>
-                    <div style={{fontSize:12,fontWeight:700,color:"#10b981",background:"#f0fdf4",padding:"4px 8px",borderRadius:8}}>+{q.xpEarned} XP</div>
+                    <div style={{fontSize:12,fontWeight:700,color:"#10b981",background:D.xpGreenBg,padding:"4px 8px",borderRadius:8}}>+{q.xpEarned} XP</div>
                   </div>
                 ))}
               </div>
@@ -524,7 +539,7 @@ function App(){
           </button>
           <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>NACH KATEGORIE</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
-            <button className="btn" onClick={()=>setCatFilter(null)} style={{padding:"8px 16px",borderRadius:50,fontSize:12,fontWeight:600,background:!catFilter?"#1a1a1a":"#f0ede8",color:!catFilter?"#fff":"#666"}}>Alle</button>
+            <button className="btn" onClick={()=>setCatFilter(null)} style={{padding:"8px 16px",borderRadius:50,fontSize:12,fontWeight:600,background:!catFilter?D.text:D.pillBg,color:!catFilter?D.bg:D.pillText}}>Alle</button>
             {Object.entries(CAT_COLORS).map(([cat,col])=>(
               <button key={cat} className="btn" onClick={()=>setCatFilter(catFilter===cat?null:cat)} style={{padding:"8px 16px",borderRadius:50,fontSize:12,fontWeight:600,background:catFilter===cat?col:col+"15",color:catFilter===cat?"#fff":col}}>{cat}</button>
             ))}
@@ -562,12 +577,12 @@ function App(){
               <span style={{width:6,height:6,borderRadius:"50%",background:"currentColor"}}/>
               {quest.cat.toUpperCase()} · {quest.mode==="solo"?"SOLO":"GRUPPE"}
             </div>
-            <div style={{background:"#fff",borderRadius:24,padding:32,boxShadow:"0 4px 24px rgba(0,0,0,0.08)",marginBottom:20}}>
+            <div style={{background:D.questCard,borderRadius:24,padding:32,boxShadow:D.cardShadow,marginBottom:20}}>
               <div style={{fontSize:56,marginBottom:16}}>{quest.emoji}</div>
               <div style={{fontFamily:"'DM Serif Display',serif",fontSize:28,lineHeight:1.2,marginBottom:16}}>{quest.title}</div>
               <div style={{fontSize:16,color:D.textSub,lineHeight:1.6}}>{quest.desc}</div>
             </div>
-            <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:16,padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
+            <div style={{background:D.xpGreenBg,border:"1px solid "+D.xpGreenBorder,borderRadius:16,padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
               <div>
                 <div style={{fontSize:13,color:D.pillText}}>Belohnung</div>
                 <div style={{fontSize:22,fontWeight:700,color:"#10b981"}}>+{quest.xp} XP{streak>=3?" (+"+(streak>=7?"20":"10")+"% Streak)":""}</div>
@@ -583,14 +598,19 @@ function App(){
       {/* ── PROFILE ── */}
       {tab==="profile"&&(
         <div className="fade-in" style={{padding:"40px 24px 90px",background:D.bg}}>
+          <div style={{display:"flex",justifyContent:"flex-end",marginBottom:8}}>
+            <button className="btn" onClick={()=>setDark(p=>!p)} style={{fontSize:22,padding:"6px 10px",borderRadius:12,background:D.pillBg,lineHeight:1}}>
+              {dark?"☀️":"🌙"}
+            </button>
+          </div>
           <div style={{textAlign:"center",marginBottom:24}}>
-            <div style={{width:72,height:72,borderRadius:"50%",background:"linear-gradient(135deg,#1a1a1a,#444)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,margin:"0 auto 12px"}}>🧭</div>
-            <div style={{fontFamily:"'DM Serif Display',serif",fontSize:22}}>{lvl.title}</div>
+            <div style={{width:72,height:72,borderRadius:"50%",background:dark?"linear-gradient(135deg,#333,#555)":"linear-gradient(135deg,#1a1a1a,#444)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,margin:"0 auto 12px"}}>🧭</div>
+            <div style={{fontFamily:"'DM Serif Display',serif",fontSize:22,color:D.text}}>{lvl.title}</div>
             <div style={{fontSize:13,color:D.textSub,marginTop:2}}>Level {lvl.level} · {xp} XP</div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
             {[{l:"Quests",v:done,e:"⚔️"},{l:"XP total",v:xp,e:"⚡"},{l:"Badges",v:badges.length,e:"🏅"},{l:"Max Streak",v:maxStreak+"d",e:"🏆"}].map(s=>(
-              <div key={s.l} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",textAlign:"center",padding:"16px 8px"}}>
+              <div key={s.l} className="card" style={{background:D.card,boxShadow:D.cardShadow,textAlign:"center",padding:"16px 8px"}}>
                 <div style={{fontSize:20}}>{s.e}</div>
                 <div style={{fontSize:22,fontWeight:700,marginTop:4}}>{s.v}</div>
                 <div style={{fontSize:10,color:D.textMuted,marginTop:2}}>{s.l}</div>
@@ -598,7 +618,7 @@ function App(){
             ))}
           </div>
           {/* Streak card */}
-          <div className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",marginBottom:20,background:streak>=3?"linear-gradient(135deg,#ff6b35,#f7c59f)":undefined,border:streak>=3?"none":"1px solid #e8e5e0"}}>
+          <div className="card" style={{background:D.card,boxShadow:D.cardShadow,marginBottom:20,background:streak>=3?"linear-gradient(135deg,#ff6b35,#f7c59f)":undefined,border:streak>=3?"none":"1px solid #e8e5e0"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
               <div>
                 <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:streak>=3?"rgba(255,255,255,0.7)":"#999",marginBottom:4}}>STREAK</div>
@@ -614,7 +634,7 @@ function App(){
             </div>
           </div>
           {/* Level progress */}
-          <div className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",marginBottom:20}}>
+          <div className="card" style={{background:D.card,boxShadow:D.cardShadow,marginBottom:20}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
               <div style={{fontWeight:600,fontSize:14}}>Level Fortschritt</div>
               <div style={{fontSize:13,color:D.textSub}}>Lv.{lvl.level} → {nextLvl?"Lv."+nextLvl.level:"MAX"}</div>
@@ -625,28 +645,12 @@ function App(){
             {nextLvl?<div style={{fontSize:12,color:D.textMuted}}>Noch {nextLvl.min-xp} XP bis <strong>{nextLvl.title}</strong></div>:<div style={{fontSize:12,color:"#10b981",fontWeight:600}}>MAX LEVEL 👑</div>}
           </div>
           {/* All badges */}
-          {/* Dark Mode Toggle */}
-          <div className="card" style={{marginBottom:20,padding:"18px 20px"}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div style={{display:"flex",alignItems:"center",gap:12}}>
-                <div style={{fontSize:26}}>{dark?"🌙":"☀️"}</div>
-                <div>
-                  <div style={{fontWeight:600,fontSize:15,color:D.text}}>{dark?"Dark Mode":"Light Mode"}</div>
-                  <div style={{fontSize:12,color:D.textMuted,marginTop:2}}>{dark?"Dunkel & entspannt":"Hell & frisch"}</div>
-                </div>
-              </div>
-              <button className="btn" onClick={()=>setDark(p=>!p)} style={{width:52,height:30,borderRadius:15,background:dark?"#3b82f6":"#e2e8f0",position:"relative",transition:"background 0.3s",flexShrink:0,padding:0}}>
-                <div style={{position:"absolute",top:3,left:dark?24:3,width:24,height:24,borderRadius:"50%",background:"#fff",transition:"left 0.3s",boxShadow:"0 2px 6px rgba(0,0,0,0.25)"}}/>
-              </button>
-            </div>
-          </div>
-
           <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>ALLE BADGES</div>
           <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
             {BADGES.map(b=>{
               const has=badges.includes(b.id);
               return (
-                <div key={b.id} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:14,padding:"14px 16px",opacity:has?1:0.5,border:has?"1.5px solid #10b981":"1px solid #e8e5e0",transition:"all 0.3s"}}>
+                <div key={b.id} className="card" style={{background:D.card,boxShadow:D.cardShadow,display:"flex",alignItems:"center",gap:14,padding:"14px 16px",opacity:has?1:0.5,border:has?"1.5px solid #10b981":"1px solid "+D.border,transition:"all 0.3s"}}>
                   <div style={{fontSize:26}}>{b.emoji}</div>
                   <div style={{flex:1}}>
                     <div style={{fontWeight:600,fontSize:14}}>{b.title}</div>
@@ -664,8 +668,8 @@ function App(){
               const reached=xp>=l.min;
               const cur=lvl.level===l.level;
               return (
-                <div key={l.level} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:12,padding:"12px 16px",opacity:reached?1:0.4,border:cur?"2px solid #1a1a1a":"1px solid #e8e5e0"}}>
-                  <div style={{width:32,height:32,borderRadius:"50%",background:reached?"#1a1a1a":"#e8e5e0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:reached?"#fff":"#aaa"}}>{l.level}</div>
+                <div key={l.level} className="card" style={{background:D.card,boxShadow:D.cardShadow,display:"flex",alignItems:"center",gap:12,padding:"12px 16px",opacity:reached?1:0.4,border:cur?"2px solid #1a1a1a":"1px solid #e8e5e0"}}>
+                  <div style={{width:32,height:32,borderRadius:"50%",background:reached?D.text:D.pillBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:reached?D.bg:D.textMuted}}>{l.level}</div>
                   <div style={{flex:1}}>
                     <div style={{fontWeight:600,fontSize:13}}>{l.title}</div>
                     <div style={{fontSize:11,color:D.textMuted}}>ab {l.min} XP</div>
@@ -717,7 +721,7 @@ function App(){
                   <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>FAVORITEN ❤️</div>
                   <div style={{display:"flex",flexDirection:"column",gap:10}}>
                     {likedQuotes.map(idx=>(
-                      <div key={idx} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",padding:"16px 18px",borderLeft:"3px solid #f59e0b"}}>
+                      <div key={idx} className="card" style={{background:D.card,boxShadow:D.cardShadow,padding:"16px 18px",borderLeft:"3px solid #f59e0b",background:D.card}}>
                         <div style={{fontSize:14,color:D.text,lineHeight:1.5,marginBottom:6}}>"{QUOTES[idx].text}"</div>
                         <div style={{fontSize:12,color:D.textMuted}}>— {QUOTES[idx].author}</div>
                       </div>
@@ -731,7 +735,7 @@ function App(){
                 <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>ALLE QUOTES</div>
                 <div style={{display:"flex",flexDirection:"column",gap:8}}>
                   {QUOTES.map((q,i)=>(
-                    <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start"}}>
+                    <div key={i} className="card" style={{background:D.card,boxShadow:D.cardShadow,padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start"}}>
                       <div style={{flex:1}}>
                         <div style={{fontSize:13,color:D.text,lineHeight:1.5}}>"{q.text}"</div>
                         <div style={{fontSize:11,color:D.textMuted,marginTop:4}}>— {q.author} · <span style={{color:"#f59e0b"}}>{q.cat}</span></div>
@@ -748,16 +752,16 @@ function App(){
           {posTab==="affirm"&&(
             <div style={{padding:"20px 24px 0"}}>
               {/* Daily affirmation */}
-              <div style={{background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"1px solid #bbf7d0",borderRadius:24,padding:28,marginBottom:20,textAlign:"center"}}>
+              <div style={{background:D.affirm,border:"1px solid "+D.affirmBorder,borderRadius:24,padding:28,marginBottom:20,textAlign:"center"}}>
                 <div style={{fontSize:36,marginBottom:12}}>🌸</div>
-                <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:"#166534",marginBottom:10}}>DEINE TAGESAFFIRMATION</div>
+                <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.affirmText,marginBottom:10}}>DEINE TAGESAFFIRMATION</div>
                 <div style={{fontFamily:"'DM Serif Display',serif",fontSize:22,color:D.text,lineHeight:1.4}}>{todayAffirm}</div>
               </div>
               <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>ALLE AFFIRMATIONEN</div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {AFFIRMATIONS.map((a,i)=>(
-                  <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",padding:"16px 18px",display:"flex",alignItems:"center",gap:12}}>
-                    <div style={{width:32,height:32,borderRadius:"50%",background:"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>🌱</div>
+                  <div key={i} className="card" style={{background:D.card,boxShadow:D.cardShadow,padding:"16px 18px",display:"flex",alignItems:"center",gap:12}}>
+                    <div style={{width:32,height:32,borderRadius:"50%",background:D.affirmBorder,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>🌱</div>
                     <div style={{fontSize:14,color:D.text,lineHeight:1.4}}>{a}</div>
                   </div>
                 ))}
@@ -770,11 +774,11 @@ function App(){
             <div style={{padding:"20px 24px 0"}}>
               {posChallenge?(
                 <div className="slide-up">
-                  <div style={{background:"linear-gradient(135deg,#fef3c7,#fde68a)",borderRadius:24,padding:28,marginBottom:16}}>
+                  <div style={{background:dark?"#1a1400":"linear-gradient(135deg,#fef3c7,#fde68a)",borderRadius:24,padding:28,marginBottom:16}}>
                     <div style={{fontSize:52,marginBottom:12}}>{posChallenge.emoji}</div>
                     <div style={{fontFamily:"'DM Serif Display',serif",fontSize:24,marginBottom:10}}>{posChallenge.title}</div>
                     <div style={{fontSize:16,color:D.textSub,lineHeight:1.6}}>{posChallenge.desc}</div>
-                    <div style={{marginTop:16,display:"inline-flex",alignItems:"center",gap:6,background:"rgba(0,0,0,0.08)",padding:"6px 12px",borderRadius:50}}>
+                    <div style={{marginTop:16,display:"inline-flex",alignItems:"center",gap:6,background:dark?"rgba(255,255,255,0.1)":"rgba(0,0,0,0.08)",padding:"6px 12px",borderRadius:50}}>
                       <span style={{fontSize:12,fontWeight:700,color:D.posHeaderText}}>+{posChallenge.xp} XP</span>
                     </div>
                   </div>
@@ -792,13 +796,13 @@ function App(){
                     {POS_CHALLENGES.map((c,i)=>{
                       const isDone=doneChallenges.includes(c.title);
                       return (
-                        <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:12,padding:"14px 16px",opacity:isDone?0.5:1}}>
+                        <div key={i} className="card" style={{background:D.card,boxShadow:D.cardShadow,display:"flex",alignItems:"center",gap:12,padding:"14px 16px",opacity:isDone?0.5:1}}>
                           <div style={{fontSize:24}}>{c.emoji}</div>
                           <div style={{flex:1}}>
                             <div style={{fontWeight:600,fontSize:13}}>{c.title}</div>
                             <div style={{fontSize:11,color:D.textMuted,marginTop:2}}>{c.desc.slice(0,50)}...</div>
                           </div>
-                          <div style={{fontSize:11,fontWeight:700,color:"#f59e0b",background:"#fef3c7",padding:"4px 8px",borderRadius:8}}>{isDone?"✓":"+"+c.xp+" XP"}</div>
+                          <div style={{fontSize:11,fontWeight:700,color:"#f59e0b",background:dark?"#1a1400":"#fef3c7",padding:"4px 8px",borderRadius:8}}>{isDone?"✓":"+"+c.xp+" XP"}</div>
                         </div>
                       );
                     })}
@@ -813,7 +817,7 @@ function App(){
             <div style={{padding:"20px 24px 0"}}>
               <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>WIE FÜHLST DU DICH HEUTE?</div>
               {savedMoodToday?(
-                <div className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",textAlign:"center",padding:24,marginBottom:20,background:"#f0fdf4",border:"1px solid #bbf7d0"}}>
+                <div className="card" style={{background:D.card,boxShadow:D.cardShadow,textAlign:"center",padding:24,marginBottom:20,background:D.xpGreenBg,border:"1px solid "+D.xpGreenBorder}}>
                   <div style={{fontSize:36,marginBottom:8}}>{moodLog[0]?.emoji}</div>
                   <div style={{fontWeight:600,fontSize:16}}>{moodLog[0]?.label}</div>
                   <div style={{fontSize:12,color:D.textMuted,marginTop:4}}>Heute gespeichert ✓</div>
@@ -833,7 +837,7 @@ function App(){
                   <div style={{fontSize:11,fontWeight:600,letterSpacing:2,color:D.textMuted,marginBottom:12}}>MOOD VERLAUF</div>
                   <div style={{display:"flex",flexDirection:"column",gap:8}}>
                     {moodLog.slice(0,10).map((m,i)=>(
-                      <div key={i} className="card" style={{background:D.card,boxShadow:dark?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 12px rgba(0,0,0,0.06)",display:"flex",alignItems:"center",gap:12,padding:"12px 16px"}}>
+                      <div key={i} className="card" style={{background:D.card,boxShadow:D.cardShadow,display:"flex",alignItems:"center",gap:12,padding:"12px 16px"}}>
                         <div style={{fontSize:24}}>{m.emoji}</div>
                         <div style={{flex:1}}>
                           <div style={{fontWeight:600,fontSize:13}}>{m.label}</div>
@@ -852,21 +856,19 @@ function App(){
 
       {/* ── TAB BAR ── */}
       {tab!=="quest"&&(
-        <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:420,background:D.tabBg,backdropFilter:"blur(12px)",borderTop:"1px solid "+D.border,display:"flex",alignItems:"center",padding:"8px 0 16px",zIndex:100}}>
-          <button className="btn" onClick={()=>setTab("home")} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 0"}}>
+        <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:420,background:D.tabBg,backdropFilter:"blur(12px)",borderTop:"1px solid "+D.border,display:"flex",alignItems:"center",justifyContent:"space-around",padding:"8px 0 16px",zIndex:100}}>
+          <button className="btn" onClick={()=>setTab("home")} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 16px"}}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill={tab==="home"?"#1a1a1a":"none"} stroke={tab==="home"?"#1a1a1a":"#aaa"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <span style={{fontSize:10,fontWeight:600,color:tab==="home"?"#1a1a1a":"#aaa"}}>Home</span>
           </button>
-          <div style={{flex:1,display:"flex",justifyContent:"center"}}>
-            <button className="btn" onClick={()=>setTab("new")} style={{width:56,height:56,borderRadius:"50%",background:"#1a1a1a",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(0,0,0,0.25)",marginTop:-18}}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
-          </div>
-          <button className="btn" onClick={()=>setTab("positivity")} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 0"}}>
+          <button className="btn" onClick={()=>setTab("new")} style={{width:56,height:56,borderRadius:"50%",background:D.text,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 20px rgba(0,0,0,0.3)",marginTop:-18,flexShrink:0}}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={D.bg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <button className="btn" onClick={()=>setTab("positivity")} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 16px"}}>
             <span style={{fontSize:22,lineHeight:1}}>{tab==="positivity"?"🌟":"⭐"}</span>
             <span style={{fontSize:10,fontWeight:600,color:tab==="positivity"?"#f59e0b":"#aaa"}}>Positivity</span>
           </button>
-          <button className="btn" onClick={()=>setTab("profile")} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 0"}}>
+          <button className="btn" onClick={()=>setTab("profile")} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"6px 16px"}}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill={tab==="profile"?"#1a1a1a":"none"} stroke={tab==="profile"?"#1a1a1a":"#aaa"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span style={{fontSize:10,fontWeight:600,color:tab==="profile"?"#1a1a1a":"#aaa"}}>Profil</span>
           </button>
